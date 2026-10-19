@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JLH9GD9SVR"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JLH9GD9SVR');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숙암향우회 · 푸꾸옥 vs 오키나와 선택 가이드북</title>
+    <meta name="description" content="숙암향우회 2027.1.7 출발 · 푸꾸옥 3박5일(LJ) / 오키나와 3박4일(ZE) 중 선택용 스마트 가이드북">
+    <meta property="og:title" content="숙암향우회 · 푸꾸옥 vs 오키나와">
+    <meta property="og:description" content="2027.1.7 출발 · 두 일정 중 하나 선택 · 투어메이커 스마트 가이드북">
+    <meta property="og:image" content="https://indadady.github.io/270107_Sukam/assets/images/og-thumb.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="숙암향우회 푸꾸옥·오키나와 선택 가이드북">
+    <meta name="twitter:card" content="summary_large_image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={theme:{extend:{colors:{tm:'#004098','tm-dark':'#002d6b'}}}}</script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Jua&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        :root { --tm: #004098; --tm-dark: #002d6b; }
+        body { font-family: 'Noto Sans KR', sans-serif; background: #f8fafc; color: #1e293b; word-break: keep-all; }
+        .font-title { font-family: 'Jua', sans-serif; }
+        .brand-logo { height: 2rem; width: auto; max-width: 9.5rem; object-fit: contain; }
+        @media(min-width:768px){ .brand-logo { height: 2.35rem; max-width: 11rem; } }
+        .hero-bg {
+            background: linear-gradient(rgba(15,23,42,.45), rgba(0,64,152,.65)), url('assets/images/og-thumb.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed;
+        }
+        @media(max-width:768px){ .hero-bg { background-attachment: scroll; } }
+        .opt-pqc .hero-opt { background: linear-gradient(rgba(15,23,42,.4), rgba(14,116,144,.7)), url('assets/images/pqc-hero.jpg'); background-size: cover; background-position: center; }
+        .opt-oki .hero-opt { background: linear-gradient(rgba(15,23,42,.4), rgba(0,64,152,.7)), url('assets/images/oki-hero.jpg'); background-size: cover; background-position: center; }
+        #map { height: 440px; width: 100%; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,.1); z-index: 10; }
+        @media(max-width:768px){ #map { height: 400px; } }
+        .map-wrap { position: relative; z-index: 0; }
+        .leaflet-maplibre-gl { z-index: 0 !important; }
+        .leaflet-control-zoom { display: none !important; }
+        #map-distance {
+            position: absolute; top: 12px; right: 12px; z-index: 450;
+            min-width: 8rem; max-width: min(46vw, 12.5rem); text-align: right;
+            background: rgba(255,255,255,.94); backdrop-filter: blur(8px);
+            border-radius: 14px; padding: 10px 12px;
+            box-shadow: 0 8px 24px rgba(15,23,42,.14); border: 1px solid rgba(148,163,184,.35);
+            pointer-events: none;
+        }
+        .map-zoom-btns { position: absolute; left: 12px; bottom: 14px; z-index: 450; display: flex; flex-direction: column; gap: 6px; }
+        .map-zoom-btns button {
+            width: 40px; height: 40px; border-radius: 12px; border: 1px solid #cbd5e1;
+            background: rgba(255,255,255,.96); color: #0f172a; font-size: 18px; font-weight: 800;
+            box-shadow: 0 4px 14px rgba(15,23,42,.12);
+        }
+        .custom-icon { background: transparent; border: none; }
+        .map-pin-wrap { display: flex; flex-direction: column; align-items: center; }
+        .map-pin-dot {
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; color: #fff; border: 2px solid rgba(255,255,255,.95);
+            box-shadow: 0 8px 16px rgba(15,23,42,.18);
+        }
+        .map-pin-label {
+            margin-top: 3px; background: rgba(255,255,255,.96); color: #0f172a;
+            font-size: 10px; font-weight: 800; letter-spacing: -.04em; line-height: 1.2;
+            padding: 2px 6px; border-radius: 6px; white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(15,23,42,.12);
+        }
+        .map-bus { font-size: 22px; line-height: 1; filter: drop-shadow(0 4px 8px rgba(15,23,42,.35)); transform-origin: center center; display: inline-block; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .animate-fade-in-up { animation: fadeInUp .8s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        section { scroll-margin-top: 80px; }
+        body.event-day section { scroll-margin-top: 148px; }
+        .schedule-media { display: flex; flex-direction: column; gap: .5rem; margin-top: .25rem; }
+        @media(min-width:768px){ .schedule-media { flex-direction: row; align-items: flex-start; gap: 1rem; } .schedule-media .schedule-desc { flex: 1; min-width: 0; } }
+        .schedule-thumb {
+            display: block; width: 100%; max-width: 10.5rem; aspect-ratio: 4/3; object-fit: cover;
+            border-radius: .75rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(15,23,42,.08); flex-shrink: 0;
+        }
+        .choice-card { transition: transform .2s, box-shadow .2s; }
+        .choice-card:hover { transform: translateY(-3px); }
+        .choice-card.active-pqc { ring: 3px; box-shadow: 0 0 0 3px #0891b2, 0 10px 25px rgba(8,145,178,.25); }
+        .choice-card.active-oki { ring: 3px; box-shadow: 0 0 0 3px #004098, 0 10px 25px rgba(0,64,152,.25); }
+        .opt-panel { display: none; }
+        body.opt-pqc .opt-panel[data-opt="pqc"] { display: block; }
+        body.opt-oki .opt-panel[data-opt="oki"] { display: block; }
+        body.opt-pqc .nav-opt-pqc { color: #0e7490; background: #ecfeff; }
+        body.opt-oki .nav-opt-oki { color: #004098; background: #eff6ff; }
+        .weather-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .375rem; }
+        @media(min-width:640px){ .weather-grid { gap: .75rem; } }
+        .esg-stat-label { line-height: 1.25; word-break: keep-all; }
+        @media screen { #print-area { display: none !important; } }
+        
+        @media print {
+            body.opt-pqc #print-area .print-oki { display: none !important; }
+            body.opt-oki #print-area .print-pqc { display: none !important; }
+            #print-area .opt-panel { display: block !important; }
+        }
+        @media print {
+            @page { size: A4 portrait; margin: 12mm 10mm; }
+            body { background: #fff !important; font-size: 10pt; color: #1e293b !important; }
+            a[href]:after { content: none !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .print-hidden, .print\:hidden, .no-print, header, footer, #event-day-bar, #tm-inquiry-modal, #phrase-modal { display: none !important; }
+            #print-area { display: block !important; width: 100%; }
+            .print-page-break { page-break-before: always; break-before: page; }
+            .print-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #004098; padding-bottom: 8px; margin-bottom: 12px; }
+            .print-header img { height: 32px; }
+            .print-doc { font-size: 11px; color: #475569; }
+            .print-title { text-align: center; font-size: 18px; font-weight: 800; margin: 0 0 10px; }
+            .print-overview { display: flex; flex-wrap: wrap; gap: 6px 14px; background: #f8fafc; border: 1px solid #94a3b8; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; font-size: 11.5px; }
+            .print-overview .label { font-weight: 700; color: #004098; margin-right: 4px; }
+            .print-table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; border: 2px solid #1e293b; margin-bottom: 10px; }
+            .print-table th, .print-table td { border: 1px solid #1e293b; padding: 6px 7px; vertical-align: top; word-break: keep-all; }
+            .print-table th { background: #f8fafc; font-weight: 700; text-align: center; }
+            .print-col-date { width: 12%; text-align: center; font-weight: 700; background: #f8fafc; vertical-align: middle; }
+            .print-col-desc { width: 72%; }
+            .print-col-meal { width: 16%; vertical-align: middle; }
+            .print-desc-list { list-style: none; margin: 4px 0; padding-left: 4px; }
+            .print-desc-list li { position: relative; padding-left: 12px; margin-bottom: 2px; line-height: 1.4; }
+            .print-desc-list li::before { content: '■'; font-size: 7px; position: absolute; left: 0; top: 3px; color: #004098; }
+            .print-time-tag { color: #004098; font-weight: 700; margin-right: 4px; }
+            .print-highlight { font-weight: 700; }
+            .print-hotel { font-size: 11px; font-weight: 700; margin-top: 4px; border-top: 1px dashed #94a3b8; padding-top: 4px; }
+            .print-meal { display: flex; flex-direction: column; gap: 4px; font-size: 11px; }
+            .print-meal strong { color: #004098; width: 16px; display: inline-block; }
+            .print-contacts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 14px; padding: 8px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 10px; margin: 8px 0; }
+            .print-contacts .pc-role { font-weight: 700; color: #004098; margin-right: 3px; }
+            .print-checklist { border: 1.5px solid #1e293b; border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; }
+            .print-checklist h2 { font-size: 12px; font-weight: 800; color: #004098; margin: 0 0 6px; }
+            .print-checklist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; font-size: 10.5px; font-weight: 600; }
+            .print-check-item { display: flex; gap: 6px; align-items: flex-start; }
+            .print-check-box { width: 11px; height: 11px; border: 1.5px solid #004098; border-radius: 2px; flex-shrink: 0; margin-top: 2px; }
+            .print-qr-box { display: flex; gap: 12px; align-items: center; border: 1.5px solid #1e293b; border-radius: 6px; padding: 10px; background: #f8fafc; }
+            .print-qr-box img { width: 88px; height: 88px; border: 1px solid #1e293b; }
+            .print-footer { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 8px; border-top: 1px solid #e2e8f0; font-size: 11px; }
+        }
+    </style>
+</head>
+<body class="antialiased pb-20 md:pb-0 opt-pqc">
+<div class="print:hidden">
+    <header class="bg-white/95 backdrop-blur-md shadow-md sticky top-0 z-50 no-print">
+        <nav class="container mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3 shrink-0">
+                <a href="http://tourmaker.kr" target="_blank" rel="noopener">
+                    <img src="assets/images/tourmaker-logo.png" alt="Tourmaker" class="brand-logo">
+                </a>
+                <span id="d-day-badge" class="hidden bg-tm text-white text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse"></span>
+            </div>
+            <div class="flex-1 overflow-x-auto no-scrollbar ml-3 md:ml-6">
+                <div class="flex items-center space-x-1 md:space-x-2 whitespace-nowrap pr-4 text-sm">
+                    <button type="button" onclick="setOption('pqc')" class="nav-opt-pqc px-3 py-2 font-bold rounded-lg">푸꾸옥</button>
+                    <button type="button" onclick="setOption('oki')" class="nav-opt-oki px-3 py-2 font-bold rounded-lg text-slate-600">오키나와</button>
+                    <a href="#choice" class="px-3 py-2 font-bold text-amber-700 hover:bg-amber-50 rounded-lg">비교선택</a>
+                    <a href="#flight" class="px-3 py-2 font-medium text-slate-600 hover:text-tm rounded-lg">항공</a>
+                    <a href="#seat-checkin" class="px-3 py-2 font-bold text-sky-700 hover:bg-sky-50 rounded-lg">좌석·체크인</a>
+                    <a href="#map-section" class="px-3 py-2 font-medium text-slate-600 hover:text-tm rounded-lg">동선</a>
+                    <a href="#schedule" class="px-3 py-2 font-bold text-tm rounded-lg">세부일정</a>
+                    <a href="#hotel" class="px-3 py-2 font-medium text-slate-600 hover:text-tm rounded-lg">숙소</a>
+                    <a href="#check" class="px-3 py-2 font-medium text-slate-600 hover:text-tm rounded-lg">준비물</a>
+                    <a href="#contact" class="px-3 py-2 font-bold text-red-600 hover:bg-red-50 rounded-lg">비상연락</a>
+                </div>
+            </div>
+            <button type="button" onclick="shareLink()" class="shrink-0 p-2 text-slate-500 hover:text-tm"><i class="fa-solid fa-share-nodes text-xl"></i></button>
+        </nav>
+    </header>
+
+    <div id="event-day-bar" class="hidden sticky top-16 z-40 bg-white/95 backdrop-blur-md border-b border-blue-100 shadow-sm no-print">
+        <div class="container mx-auto px-4 py-2.5">
+            <div class="grid grid-cols-2 gap-2 max-w-lg mx-auto">
+                <button type="button" onclick="goToTodaySchedule()" class="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 border-tm bg-tm text-white font-bold text-sm shadow-sm active:scale-95 transition">
+                    <i class="fa-solid fa-calendar-day"></i> 오늘의 일정
+                </button>
+                <button type="button" onclick="goToTodayRoute()" class="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border-2 border-slate-300 bg-white text-slate-700 font-bold text-sm shadow-sm active:scale-95 transition">
+                    <i class="fa-solid fa-route"></i> 당일 동선
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOME -->
+    <section id="home" class="hero-bg min-h-[52vh] flex items-center justify-center text-center px-4">
+        <div class="animate-fade-in-up text-white max-w-3xl">
+            <span class="bg-tm/90 px-5 py-2 rounded-full text-base md:text-lg font-bold mb-5 inline-block border border-white/20 shadow-lg font-title">숙암향우회</span>
+            <h1 class="text-3xl md:text-5xl font-bold mb-3 drop-shadow-lg font-title leading-tight">푸꾸옥 · 오키나와<br><span class="text-yellow-300">두 일정 중 하나 선택</span></h1>
+            <p id="hero-date" class="text-lg md:text-xl text-white font-bold tracking-wide mb-2">2027. 1. 7(목) 출발</p>
+            <p id="hero-desc" class="text-sm md:text-base text-slate-200 font-medium">같은 팀 · 같은 출발일 · 일정표를 비교해 보시고 원하시는 코스를 선택해 주세요.</p>
+            <p class="mt-4 text-xs text-white/80">담당: 배부근 대표 010-9362-8265</p>
+            <a href="#choice" class="mt-6 inline-flex items-center gap-2 bg-white text-tm font-extrabold px-6 py-3 rounded-2xl shadow-lg hover:bg-slate-50 transition">
+                <i class="fa-solid fa-scale-balanced"></i> 일정 비교 · 선택하기
+            </a>
+        </div>
+    </section>
+
+    <!-- CHOICE -->
+    <section id="choice" class="py-12 bg-white -mt-8 rounded-t-3xl relative z-10 shadow-[0_-5px_20px_rgba(0,0,0,.08)]">
+        <div class="container mx-auto px-4 max-w-5xl">
+            <div class="text-center mb-8">
+                <span class="text-amber-600 font-black tracking-widest text-xs uppercase">CHOOSE YOUR JOURNEY</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mt-2 font-title">어느 일정이 더 마음에 드시나요?</h2>
+                <p class="text-slate-500 text-sm mt-2">카드를 누르면 해당 일정의 항공·동선·세부일정이 아래에 펼쳐집니다.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-5 mb-8">
+                <button type="button" onclick="setOption('pqc')" id="card-pqc" class="choice-card active-pqc text-left bg-cyan-50 border-2 border-cyan-300 rounded-3xl overflow-hidden shadow-md">
+                    <img src="assets/images/pqc-hero.jpg" alt="푸꾸옥 선셋타운" class="w-full h-40 object-cover">
+                    <div class="p-5">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <h3 class="text-xl font-extrabold text-cyan-900 font-title">푸꾸옥 3박 5일</h3>
+                            <span class="bg-cyan-600 text-white text-[10px] font-bold px-2 py-1 rounded-full">LJ · LAND</span>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-3">2027.1.7(목) ~ 1.11(월) · 14명(14+0) · 5성 호텔</p>
+                        <ul class="text-xs text-slate-600 space-y-1.5">
+                            <li>• 진에어 LJ135/136 · 인천 ↔ 푸꾸옥</li>
+                            <li>• 해상케이블카 · 선셋타운 · 사파리 · 그랜드월드</li>
+                            <li>• 현지인가이드 미팅 · 노옵션 · 쇼핑 2회</li>
+                        </ul>
+                    </div>
+                </button>
+                <button type="button" onclick="setOption('oki')" id="card-oki" class="choice-card text-left bg-blue-50 border-2 border-blue-200 rounded-3xl overflow-hidden shadow-md">
+                    <img src="assets/images/oki-hero.jpg" alt="오키나와 슈리성" class="w-full h-40 object-cover">
+                    <div class="p-5">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <h3 class="text-xl font-extrabold text-tm font-title">오키나와 3박 4일</h3>
+                            <span class="bg-tm text-white text-[10px] font-bold px-2 py-1 rounded-full">ZE · LAND</span>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-3">2027.1.7(목) ~ 1.10(일) · 12명(12+1TG) · 4성 호텔</p>
+                        <ul class="text-xs text-slate-600 space-y-1.5">
+                            <li>• 이스타항공 ZE631/632 · 인천 ↔ 나하</li>
+                            <li>• 츄라우미 · 만좌모 · 오키나와월드 · 슈리성</li>
+                            <li>• 스루가이드 동행 · 노옵션 · 쇼핑 1회 · 온천욕</li>
+                        </ul>
+                    </div>
+                </button>
+            </div>
+            <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
+                <table class="w-full text-sm min-w-[640px]">
+                    <thead class="bg-slate-800 text-white">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-bold">비교 항목</th>
+                            <th class="px-4 py-3 text-left font-bold text-cyan-200">푸꾸옥</th>
+                            <th class="px-4 py-3 text-left font-bold text-sky-200">오키나와</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-slate-100">
+                        <tr><td class="px-4 py-2.5 font-bold text-slate-700">기간</td><td class="px-4 py-2.5">3박 5일 (1/7~1/11)</td><td class="px-4 py-2.5">3박 4일 (1/7~1/10)</td></tr>
+                        <tr class="bg-slate-50"><td class="px-4 py-2.5 font-bold text-slate-700">인원</td><td class="px-4 py-2.5">14명 (14+0) · 7TWIN</td><td class="px-4 py-2.5">12명 (12+1TG) · 6TWIN</td></tr>
+                        <tr><td class="px-4 py-2.5 font-bold text-slate-700">항공</td><td class="px-4 py-2.5">진에어 LJ135/136 · 저녁 출발</td><td class="px-4 py-2.5">이스타 ZE631/632 · 오전 출발</td></tr>
+                        <tr class="bg-slate-50"><td class="px-4 py-2.5 font-bold text-slate-700">호텔</td><td class="px-4 py-2.5">베스트웨스턴 또는 동급 5성</td><td class="px-4 py-2.5">르와지르 나하 또는 동급 4성 · 온천</td></tr>
+                        <tr><td class="px-4 py-2.5 font-bold text-slate-700">가이드</td><td class="px-4 py-2.5">도착 후 현지인가이드 미팅</td><td class="px-4 py-2.5">스루가이드 전일정 동행</td></tr>
+                        <tr class="bg-slate-50"><td class="px-4 py-2.5 font-bold text-slate-700">쇼핑</td><td class="px-4 py-2.5">2회 (침향·커피)</td><td class="px-4 py-2.5">1회 (면세점)</td></tr>
+                        <tr><td class="px-4 py-2.5 font-bold text-slate-700">분위기</td><td class="px-4 py-2.5">열대 리조트 · 테마파크 · 야시장</td><td class="px-4 py-2.5">해양·역사·평화 · 일본 감성</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-center text-xs text-slate-400 mt-4">※ LAND ONLY · 항공료·TAX·유류세·여행자보험·매너팁·개인경비 불포함 · 호텔 북앤바이</p>
+        </div>
+    </section>
+
+    <!-- ========== PHU QUOC PANEL ========== -->
+    <div class="opt-panel" data-opt="pqc">
+        <section class="hero-opt py-14 text-white text-center px-4">
+            <span class="bg-cyan-600/90 px-4 py-1.5 rounded-full text-sm font-bold mb-3 inline-block">선택중 · 푸꾸옥</span>
+            <h2 class="text-3xl md:text-4xl font-bold font-title drop-shadow">푸꾸옥 3박 5일</h2>
+            <p class="mt-2 text-cyan-50 text-sm md:text-base">진에어 LJ135/136 · 베스트웨스턴 또는 동급 5성 · 14명 단독</p>
+        </section>
+
+        <section id="highlights" class="py-12 bg-white border-t border-slate-100">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <div class="text-center mb-8">
+                    <span class="text-cyan-600 font-black tracking-widest text-xs uppercase">Special Points</span>
+                    <h2 class="text-2xl font-bold font-title mt-2">푸꾸옥 핵심 포인트</h2>
+                </div>
+                <div class="grid md:grid-cols-2 gap-5">
+                    <div class="bg-cyan-50 p-6 rounded-2xl border border-cyan-100">
+                        <div class="text-3xl mb-3">🚠</div>
+                        <h3 class="font-bold text-lg mb-2">기네스 해상케이블카 · 썬월드</h3>
+                        <p class="text-sm text-slate-600">혼똠섬을 잇는 해상케이블카와 네이처파크·워터파크를 하루 코스로 즐깁니다. (아쿠아슈즈·방수팩·모자 개인 준비)</p>
+                    </div>
+                    <div class="bg-amber-50 p-6 rounded-2xl border border-amber-100">
+                        <div class="text-3xl mb-3">🌅</div>
+                        <h3 class="font-bold text-lg mb-2">선셋타운 · KISS OF THE SEA</h3>
+                        <p class="text-sm text-slate-600">작은 유럽 감성의 선셋타운과 버기카·부이페스트 야시장, 키스 오브 더 씨 쇼가 이어집니다.</p>
+                    </div>
+                    <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100">
+                        <div class="text-3xl mb-3">🦁</div>
+                        <h3 class="font-bold text-lg mb-2">빈펄사파리 · 그랜드월드</h3>
+                        <p class="text-sm text-slate-600">바구니배 체험, 전동카 사파리, 베네치아풍 그랜드월드 곤돌라·자유시간, 즈엉동 야시장까지.</p>
+                    </div>
+                    <div class="bg-rose-50 p-6 rounded-2xl border border-rose-100">
+                        <div class="text-3xl mb-3">🏯</div>
+                        <h3 class="font-bold text-lg mb-2">호국사 · 코코넛수용소 · 마사지</h3>
+                        <p class="text-sm text-slate-600">호국사·수오이짠·코코넛수용소·진주박물관·후추농장, 전신마사지 90분(팁$5 별도)으로 마무리합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="flight" class="py-12 bg-slate-50 border-t border-slate-200">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <div class="bg-white rounded-2xl border border-cyan-100 shadow-lg overflow-hidden">
+                    <div class="bg-cyan-50 px-6 py-4 border-b border-cyan-100 flex flex-wrap justify-between items-center gap-2">
+                        <h3 class="font-bold text-lg font-title"><i class="fa-solid fa-plane-departure text-cyan-700 mr-2"></i>항공 스케줄</h3>
+                        <span class="bg-cyan-700 text-white text-xs px-3 py-1 rounded-full font-bold">진에어 · 인천 ↔ 푸꾸옥</span>
+                    </div>
+                    <div class="p-6 md:p-8 grid md:grid-cols-2 gap-4 text-sm">
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                            <p class="font-bold text-slate-800 mb-1">가는 편 · 1/7(목) LJ135</p>
+                            <p class="text-slate-600">인천 17:05 출발 → 푸꾸옥 21:00 도착 · 도착 후 현지인가이드 미팅</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                            <p class="font-bold text-slate-800 mb-1">오는 편 · 1/10(일) LJ136</p>
+                            <p class="text-slate-600">푸꾸옥 22:10 출발 → 인천 1/11(월) 05:20 도착</p>
+                        </div>
+                    </div>
+                    <p class="px-6 pb-6 text-xs text-slate-500">항공 스케줄은 항공사 사정에 따라 달라질 수 있습니다. 국제선은 출발 3시간 전 공항 도착을 권합니다. · LAND ONLY(항공료·TAX·유류세 불포함)</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="seat-checkin-pqc" class="py-16 bg-sky-50/70 border-t border-sky-100">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <div class="text-center mb-10">
+                    <span class="inline-block bg-tm text-white text-xs px-3 py-1 rounded-full font-bold shadow-sm mb-3">JINAIR · ONLINE CHECK-IN</span>
+                    <h2 class="text-2xl md:text-3xl font-bold font-title">진에어 온라인 체크인 · 개별 수속 안내</h2>
+                    <p class="text-slate-600 mt-2 text-sm">인천공항에서 인솔자 미동행 · <strong>개별 체크인</strong> 후 출국하며, 푸꾸옥 도착 시 <strong>현지인가이드 미팅</strong>으로 일정이 시작됩니다.</p>
+                </div>
+                <div class="bg-white rounded-3xl shadow-lg border border-sky-100 overflow-hidden mb-6">
+                    <div class="grid md:grid-cols-2">
+                        <div class="p-8">
+                            <h3 class="text-xl font-bold mb-6">💺 온라인 체크인 &amp; 공항 개별 수속</h3>
+                            <ol class="space-y-5 text-sm text-slate-600">
+                                <li class="flex gap-4 items-start">
+                                    <span class="bg-sky-100 text-tm w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</span>
+                                    <div>
+                                        <p class="font-bold text-slate-800 mb-1">온라인 체크인 &amp; 무료 좌석배정<br>
+                                        <span class="inline-block text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 mt-1">항공권 발권(E-티켓 발행) 완료 후 · 출발 24시간 ~ 1시간 전</span></p>
+                                        <p class="leading-relaxed">진에어 홈페이지·앱에서 잔여 일반석을 무료로 선택할 수 있습니다.</p>
+                                        <div class="mt-2 bg-slate-50 rounded-xl p-3 border text-xs space-y-1">
+                                            <p><strong class="text-tm">가는 편(LJ135)</strong> : 1/6(수) 17:05 오픈 ~ 1/7(목) 16:05 마감</p>
+                                            <p><strong class="text-tm">오는 편(LJ136)</strong> : 1/9(토) 22:10 오픈 ~ 1/10(일) 21:10 마감</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="flex gap-4 items-start">
+                                    <span class="bg-sky-100 text-tm w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</span>
+                                    <div>
+                                        <p class="font-bold text-slate-800 mb-1">인천공항 카운터 개별 수속<br>
+                                        <span class="inline-block text-xs font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200 mt-1">출발 당일 · 최소 3시간 전 도착 권장</span></p>
+                                        <p class="leading-relaxed">온라인 체크인을 하지 않으셔도 됩니다. 일행 여권을 함께 제시하시면 인접 좌석 배정에 도움이 됩니다.</p>
+                                    </div>
+                                </li>
+                                <li class="flex gap-4 items-start">
+                                    <span class="bg-sky-100 text-tm w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</span>
+                                    <div>
+                                        <p class="font-bold text-slate-800 mb-1">푸꾸옥 도착 · 현지인가이드 미팅<br>
+                                        <span class="inline-block text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 mt-1">도착 후 미팅</span></p>
+                                        <p class="leading-relaxed">입국심사·짐 수취 후 출구에서 현지인가이드와 미팅하여 호텔로 이동합니다.</p>
+                                    </div>
+                                </li>
+                            </ol>
+                            <a href="https://www.jinair.com/" target="_blank" rel="noopener" class="mt-6 inline-flex items-center justify-center gap-2 bg-tm hover:bg-tm-dark text-white font-bold py-3 px-6 rounded-xl text-sm">진에어 홈페이지</a>
+                        </div>
+                        <div class="bg-sky-100/50 p-8 border-t md:border-t-0 md:border-l border-sky-100">
+                            <div class="bg-white rounded-2xl p-5 shadow-sm mb-4 border border-sky-100 text-xs text-slate-600 space-y-2">
+                                <p class="font-bold text-tm text-sm mb-2"><i class="fa-solid fa-suitcase-rolling mr-1"></i>수하물 · 수속</p>
+                                <p>• 위탁수하물이 있으면 온라인 체크인 후에도 카운터에서 짐을 부쳐야 합니다.</p>
+                                <p>• 국제선 수속은 통상 출발 60분 전 마감입니다.</p>
+                                <p>• 단체(그룹) 운임에 따라 온라인 체크인이 제한될 수 있습니다.</p>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-xs text-blue-900">
+                                <strong>숙암향우회 14명 단독팀:</strong> 한국 출발 시 인솔자 미동행 · 인천 개별 체크인 → 푸꾸옥 도착 후 현지인가이드 미팅으로 진행됩니다.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-rose-50/90 rounded-3xl border-2 border-rose-200 p-6 md:p-8 shadow-sm">
+                    <h3 class="font-extrabold text-slate-800 text-base md:text-lg mb-1">[진에어] 보조배터리 및 전자담배 기내반입 기준</h3>
+                    <p class="text-xs text-rose-700 font-semibold mb-4">위탁 수하물 절대 금지 · 출국 전 전원 확인</p>
+                    <div class="grid md:grid-cols-2 gap-3 text-xs md:text-sm text-slate-700">
+                        <div class="bg-white rounded-2xl p-4 border border-rose-100"><p class="font-bold">기내 사용·충전 금지</p><p class="text-xs text-slate-600 mt-1">위탁 금지 · 기내에서도 사용·충전 불가</p></div>
+                        <div class="bg-white rounded-2xl p-4 border border-rose-100"><p class="font-bold">선반(Overhead Bin) 보관 불가</p><p class="text-xs text-slate-600 mt-1">직접 휴대 또는 앞좌석 주머니 보관</p></div>
+                        <div class="bg-white rounded-2xl p-4 border border-rose-100"><p class="font-bold">단락 방지 필수</p><p class="text-xs text-slate-600 mt-1">절연테이프·투명 비닐백 개별 보관 · 전자담배 전원 OFF</p></div>
+                        <div class="bg-white rounded-2xl p-4 border border-rose-100"><p class="font-bold">1인 최대 2개 · 160Wh 초과 불가</p><p class="text-xs text-slate-600 mt-1">100~160Wh는 카운터 승인 · 파손·리콜 반입 금지</p></div>
+                    </div>
+                </div>
+                <p class="text-center text-xs text-slate-500 mt-5">※ 항공사 정책 및 당일 공항 사정에 의해 변동될 수 있습니다.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- ========== OKINAWA PANEL (flight/seat) ========== -->
+    <div class="opt-panel" data-opt="oki">
+        <section class="hero-opt py-14 text-white text-center px-4">
+            <span class="bg-tm/90 px-4 py-1.5 rounded-full text-sm font-bold mb-3 inline-block">선택중 · 오키나와</span>
+            <h2 class="text-3xl md:text-4xl font-bold font-title drop-shadow">오키나와 3박 4일</h2>
+            <p class="mt-2 text-blue-50 text-sm md:text-base">이스타항공 ZE631/632 · 르와지르 나하 또는 동급 4성 · 12명+스루가이드</p>
+        </section>
+
+        <section id="highlights-oki" class="py-12 bg-white border-t border-slate-100">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <div class="text-center mb-8">
+                    <span class="text-tm font-black tracking-widest text-xs uppercase">Special Points</span>
+                    <h2 class="text-2xl font-bold font-title mt-2">오키나와 핵심 포인트</h2>
+                </div>
+                <div class="grid md:grid-cols-2 gap-5">
+                    <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+                        <div class="text-3xl mb-3">🚌</div>
+                        <h3 class="font-bold text-lg mb-2">12명 단독 · 스루가이드</h3>
+                        <p class="text-sm text-slate-600">전용차량(45인승)과 스루가이드가 전일정 동행합니다. 면세점 쇼핑 1회 · 노옵션입니다.</p>
+                    </div>
+                    <div class="bg-cyan-50 p-6 rounded-2xl border border-cyan-100">
+                        <div class="text-3xl mb-3">🐋</div>
+                        <h3 class="font-bold text-lg mb-2">북부 해양 하루</h3>
+                        <p class="text-sm text-slate-600">츄라우미 수족관 · 글래스보트 · 만좌모 · 아메리칸 빌리지. (오키짱극장 불포함·보수유지기간)</p>
+                    </div>
+                    <div class="bg-amber-50 p-6 rounded-2xl border border-amber-100">
+                        <div class="text-3xl mb-3">🏯</div>
+                        <h3 class="font-bold text-lg mb-2">남부 역사·평화 · 슈리성</h3>
+                        <p class="text-sm text-slate-600">치넨미사키 · 오키나와월드(프리패스) · 평화기념공원 · 마사히로주조 · 슈리성공원.</p>
+                    </div>
+                    <div class="bg-rose-50 p-6 rounded-2xl border border-rose-100">
+                        <div class="text-3xl mb-3">♨</div>
+                        <h3 class="font-bold text-lg mb-2">온천욕 · 프리미엄 식사</h3>
+                        <p class="text-sm text-slate-600">호텔 온천욕 체험. 석식은 일정식 · 야키니쿠 무제한 · 샤브샤브입니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="flight-oki" class="py-12 bg-slate-50 border-t border-slate-200">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <div class="bg-white rounded-2xl border border-blue-100 shadow-lg overflow-hidden">
+                    <div class="bg-blue-50 px-6 py-4 border-b border-blue-100 flex flex-wrap justify-between items-center gap-2">
+                        <h3 class="font-bold text-lg font-title"><i class="fa-solid fa-plane-departure text-tm mr-2"></i>항공 스케줄</h3>
+                        <span class="bg-tm text-white text-xs px-3 py-1 rounded-full font-bold">이스타항공 · 인천 ↔ 나하</span>
+                    </div>
+                    <div class="p-6 md:p-8 grid md:grid-cols-2 gap-4 text-sm">
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                            <p class="font-bold text-slate-800 mb-1">가는 편 · 1/7(목) ZE631</p>
+                            <p class="text-slate-600">인천 11:25 출발 → 나하 14:00 도착 · 스루가이드·전용차량</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                            <p class="font-bold text-slate-800 mb-1">오는 편 · 1/10(일) ZE632</p>
+                            <p class="text-slate-600">나하 15:00 출발 → 인천 17:50 도착</p>
+                        </div>
+                    </div>
+                    <p class="px-6 pb-6 text-xs text-slate-500">항공 스케줄은 항공사 사정에 따라 달라질 수 있습니다. · LAND ONLY · T/G 항공료는 여행사 부담</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="seat-checkin-oki" class="py-16 bg-sky-50/70 border-t border-sky-100">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <div class="text-center mb-10">
+                    <span class="inline-block bg-tm text-white text-xs px-3 py-1 rounded-full font-bold shadow-sm mb-3">EASTAR JET · ONLINE CHECK-IN</span>
+                    <h2 class="text-2xl md:text-3xl font-bold font-title">이스타항공 온라인 체크인 · 스루가이드 수속 안내</h2>
+                </div>
+                <div class="bg-white rounded-3xl shadow-lg border border-sky-100 overflow-hidden mb-6">
+                    <div class="grid md:grid-cols-2">
+                        <div class="p-8">
+                            <h3 class="text-xl font-bold mb-6">💺 온라인 체크인 &amp; 공항 수속</h3>
+                            <ol class="space-y-5 text-sm text-slate-600">
+                                <li class="flex gap-4 items-start">
+                                    <span class="bg-sky-100 text-tm w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</span>
+                                    <div>
+                                        <p class="font-bold text-slate-800 mb-1">온라인 체크인 &amp; 무료 좌석배정<br>
+                                        <span class="inline-block text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 mt-1">항공권 발권(E-티켓 발행) 완료 후 · 출발 24시간 ~ 1시간 전</span></p>
+                                        <div class="mt-2 bg-slate-50 rounded-xl p-3 border text-xs space-y-1">
+                                            <p><strong class="text-tm">가는 편(ZE631)</strong> : 1/6(수) 11:25 오픈 ~ 1/7(목) 10:25 마감</p>
+                                            <p><strong class="text-tm">오는 편(ZE632)</strong> : 1/9(토) 15:00 오픈 ~ 1/10(일) 14:00 마감 <span class="text-emerald-700 font-bold">(나하 출발 가능)</span></p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="flex gap-4 items-start">
+                                    <span class="bg-sky-100 text-tm w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</span>
+                                    <div>
+                                        <p class="font-bold text-slate-800 mb-1">공항 카운터 · 스루가이드 지원<br>
+                                        <span class="inline-block text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 mt-1">출발 당일</span></p>
+                                        <p class="leading-relaxed">온라인 체크인을 하지 않으셔도 됩니다. 출발 당일 스루가이드가 일행 인접 좌석 배정을 도와드립니다.</p>
+                                    </div>
+                                </li>
+                            </ol>
+                            <a href="https://www.eastarjet.com/" target="_blank" rel="noopener" class="mt-6 inline-flex items-center justify-center gap-2 bg-tm hover:bg-tm-dark text-white font-bold py-3 px-6 rounded-xl text-sm">이스타항공 홈페이지</a>
+                        </div>
+                        <div class="bg-sky-100/50 p-8 border-t md:border-t-0 md:border-l border-sky-100">
+                            <div class="bg-white rounded-2xl p-5 shadow-sm mb-4 border text-xs text-slate-600 space-y-2">
+                                <p class="font-bold text-tm text-sm mb-2">비짓재팬 웹</p>
+                                <p>출발 전 Visit Japan Web에서 입국·세관 QR을 준비해 주세요.</p>
+                                <p class="font-semibold text-slate-800">숙소(영문): Loisir Hotel Naha, 3-2-1 Nishi, Naha-shi, Okinawa 900-0036, Japan</p>
+                                <a href="https://www.vjw.digital.go.jp/" target="_blank" rel="noopener" class="inline-block mt-2 text-tm font-bold">Visit Japan Web →</a>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-xs text-blue-900">
+                                <strong>숙암향우회 12명+TG:</strong> 인천공항에서 스루가이드가 미팅하여 출국 수속을 안내합니다.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-rose-50/90 rounded-3xl border-2 border-rose-200 p-6 md:p-8 shadow-sm">
+                    <h3 class="font-extrabold text-slate-800 mb-1">[이스타항공] 보조배터리 및 전자담배 기내반입 기준</h3>
+                    <p class="text-xs text-rose-700 font-semibold mb-4">위탁 수하물 절대 금지</p>
+                    <div class="grid md:grid-cols-2 gap-3 text-xs md:text-sm">
+                        <div class="bg-white rounded-2xl p-4 border border-rose-100"><p class="font-bold">기내 사용·충전 금지</p><p class="text-xs text-slate-600 mt-1">위탁 금지 · 기내 사용·충전 불가</p></div>
+                        <div class="bg-white rounded-2xl p-4 border border-rose-100"><p class="font-bold">선반 보관 불가</p><p class="text-xs text-slate-600 mt-1">직접 휴대 또는 앞좌석 주머니</p></div>
+                        <div class="bg-white rounded-2xl p-4 border border-rose-100"><p class="font-bold">단락 방지 필수</p><p class="text-xs text-slate-600 mt-1">절연테이프·투명 비닐백 · 전자담배 OFF</p></div>
+                        <div class="bg-white rounded-2xl p-4 border border-rose-100"><p class="font-bold">1인 최대 2개 · 160Wh 초과 불가</p><p class="text-xs text-slate-600 mt-1">100~160Wh 카운터 승인 · 파손·리콜 금지</p></div>
+                    </div>
+                </div>
+                <p class="text-center text-xs text-slate-500 mt-5">※ 항공사 정책 및 당일 공항 사정에 의해 변동될 수 있습니다.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- MAP (shared, data switches) -->
+    <section id="map-section" class="py-12 bg-white border-t border-slate-200">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-8">
+                <span class="text-tm font-black tracking-widest text-xs uppercase">ANIMATED ROUTING MAP</span>
+                <h2 class="text-3xl font-bold font-title mt-2">한눈에 보는 동선 지도</h2>
+                <p id="map-hint" class="text-slate-500 mt-2 text-sm">선택하신 일정의 실제 도로 동선이 그려집니다.</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2 mb-6" id="map-btns"></div>
+            <div class="map-wrap max-w-5xl mx-auto border border-slate-200 rounded-2xl p-1 shadow-lg bg-white relative">
+                <div id="map"></div>
+                <div id="map-distance" class="hidden">
+                    <p class="text-[10px] font-bold text-slate-400">대략 이동</p>
+                    <p id="map-distance-leg" class="font-bold text-xs text-slate-800 mt-0.5"></p>
+                    <p id="map-distance-time" class="font-black text-sm text-tm mt-0.5"></p>
+                    <p id="map-distance-km" class="text-[10px] font-bold text-slate-500 mt-0.5"></p>
+                </div>
+                <div class="map-zoom-btns">
+                    <button type="button" onclick="mapZoom(1)" aria-label="줌인">+</button>
+                    <button type="button" onclick="mapZoom(-1)" aria-label="줌아웃">−</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SCHEDULE PQC -->
+    <div class="opt-panel" data-opt="pqc">
+        <section id="schedule" class="py-16 bg-slate-50 border-t border-slate-100">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold font-title">푸꾸옥 세부 일정</h2>
+                        <p class="text-slate-500 text-sm mt-1">※ 항공 및 현지 사정에 의해 변동될 수 있습니다.</p>
+                    </div>
+                    <div class="text-center sm:text-right shrink-0 no-print">
+                        <button type="button" onclick="handlePrint()" class="inline-flex items-center gap-1.5 bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
+                            <i class="fa-solid fa-print"></i> 일정표 인쇄하기
+                        </button>
+                        <p class="mt-2 text-xs text-slate-500 leading-relaxed max-w-[16rem] mx-auto sm:ml-auto sm:mr-0">모바일(카카오톡 등)에서는<br>인쇄가 어려울 수 있어요.<br>다른 브라우저나 PC에서 열어 주세요.</p>
+                    </div>
+                </div>
+                <div class="flex overflow-x-auto no-scrollbar gap-2 mb-8 justify-start md:justify-center" id="tab-btns-pqc">
+                    <button class="tab-btn active shrink-0 px-5 py-3 rounded-2xl border-2 border-cyan-600 bg-cyan-600 text-white font-bold text-sm" onclick="openTab(event,'pqc-day1','pqc')">1일차 (1/7)</button>
+                    <button class="tab-btn shrink-0 px-5 py-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-500 font-bold text-sm" onclick="openTab(event,'pqc-day2','pqc')">2일차 (1/8)</button>
+                    <button class="tab-btn shrink-0 px-5 py-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-500 font-bold text-sm" onclick="openTab(event,'pqc-day3','pqc')">3일차 (1/9)</button>
+                    <button class="tab-btn shrink-0 px-5 py-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-500 font-bold text-sm" onclick="openTab(event,'pqc-day4','pqc')">4일차 (1/10)</button>
+                    <button class="tab-btn shrink-0 px-5 py-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-500 font-bold text-sm" onclick="openTab(event,'pqc-day5','pqc')">5일차 (1/11)</button>
+                </div>
+                <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                    <div id="pqc-day1" class="tab-content p-8">
+                        <h3 class="font-bold text-2xl font-title mb-1">인천 → 푸꾸옥 도착</h3>
+                        <p class="text-cyan-700 text-sm font-medium mb-6">LJ135 · 현지인가이드 미팅 · 호텔</p>
+                        <div class="space-y-5">
+                            <div class="relative pl-8 border-l-2 border-cyan-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-tm"></div>
+                                <h4 class="font-bold">17:05 인천 출발 (LJ135)</h4>
+                                <p class="text-sm text-slate-500 mt-1">개별 체크인 · 기내식</p></div>
+                            <div class="relative pl-8 border-l-2 border-cyan-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-cyan-600"></div>
+                                <h4 class="font-bold">21:00 푸꾸옥 도착 · 현지인가이드 미팅</h4>
+                                <p class="text-sm text-slate-500 mt-1">호텔 투숙 및 휴식</p></div>
+                        </div>
+                        <p class="mt-6 text-xs text-slate-500">🏨 베스트웨스턴 호텔 또는 동급 (5성급)</p>
+                    </div>
+                    <div id="pqc-day2" class="tab-content hidden p-8">
+                        <h3 class="font-bold text-2xl font-title mb-1">썬월드 · 선셋타운 · 야시장</h3>
+                        <p class="text-cyan-700 text-sm font-medium mb-6">조:호텔 · 중:뷔페(망고) · 석:김치전골+파전</p>
+                        <div class="space-y-5">
+                            <div class="relative pl-8 border-l-2 border-cyan-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-teal-400"></div><h4 class="font-bold">호텔 조식 후 출발</h4></div>
+                            <div class="relative pl-8 border-l-2 border-cyan-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-cyan-600"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">해상케이블카 · 썬월드</h4><p class="text-sm text-slate-500 mt-1">기네스 해상케이블카로 혼똠섬 횡단 · 네이처파크+워터파크</p></div>
+                                <img src="assets/images/pqc-cablecar.jpg" alt="혼똠 케이블카" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-cyan-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-amber-500"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">선셋타운 · 시티투어</h4><p class="text-sm text-slate-500 mt-1">버기카+부이페스트 야시장 · KISS OF THE SEA 쇼</p></div>
+                                <img src="assets/images/pqc-sunsettown.jpg" alt="선셋타운" class="schedule-thumb"></div></div>
+                        </div>
+                    </div>
+                    <div id="pqc-day3" class="tab-content hidden p-8">
+                        <h3 class="font-bold text-2xl font-title mb-1">바구니배 · 사파리 · 그랜드월드</h3>
+                        <p class="text-cyan-700 text-sm font-medium mb-6">조:호텔 · 중:현지식 · 석:쌈밥정식</p>
+                        <div class="space-y-5">
+                            <div class="relative pl-8 border-l-2 border-emerald-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-sky-500"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">바구니배 체험</h4><p class="text-sm text-slate-500 mt-1">SNS 인기 동그란 바구니배</p></div>
+                                <img src="assets/images/pqc-basketboat.jpg" alt="바구니배" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-emerald-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-emerald-600"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">빈펄사파리 (전동카)</h4></div>
+                                <img src="assets/images/pqc-safari.jpg" alt="사파리" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-emerald-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-violet-500"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">그랜드월드 · 즈엉동 야시장</h4><p class="text-sm text-slate-500 mt-1">곤돌라 &amp; 자유시간 후 야시장</p></div>
+                                <img src="assets/images/pqc-grandworld.jpg" alt="그랜드월드" class="schedule-thumb"></div></div>
+                        </div>
+                    </div>
+                    <div id="pqc-day4" class="tab-content hidden p-8">
+                        <h3 class="font-bold text-2xl font-title mb-1">호국사 · 수용소 · 마사지 · 출국</h3>
+                        <p class="text-cyan-700 text-sm font-medium mb-6">조:호텔 · 중:베트남가정식 · 석:씨푸드(노보텔)</p>
+                        <div class="space-y-5">
+                            <div class="relative pl-8 border-l-2 border-rose-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-amber-700"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">호국사 · 수오이짠 · 코코넛수용소</h4></div>
+                                <img src="assets/images/pqc-hoquoc.jpg" alt="호국사" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-rose-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-slate-600"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">진주박물관 · 후추농장</h4></div>
+                                <img src="assets/images/pqc-pepper.jpg" alt="후추농장" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-rose-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-rose-500"></div>
+                                <h4 class="font-bold">전신마사지 90분</h4><p class="text-sm text-slate-500 mt-1">팁 $5/인 별도 · 공항 이동</p></div>
+                            <div class="bg-blue-50 p-5 rounded-2xl border border-blue-200 text-center">
+                                <p class="font-bold">✈️ 22:10 푸꾸옥 출발 (LJ136)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="pqc-day5" class="tab-content hidden p-8">
+                        <h3 class="font-bold text-2xl font-title mb-1">인천 도착</h3>
+                        <div class="bg-blue-50 p-6 rounded-2xl border border-blue-200 text-center mt-4">
+                            <p class="font-bold text-lg">🛬 05:20 인천국제공항 도착</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="hotel" class="py-16 bg-white border-t border-slate-200">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <div class="text-center mb-8">
+                    <span class="text-cyan-600 font-black tracking-widest text-xs uppercase">Accommodation</span>
+                    <h2 class="text-2xl font-bold font-title mt-2">푸꾸옥 숙소 (3박)</h2>
+                </div>
+                <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-md">
+                    <div class="grid md:grid-cols-2">
+                        <img src="assets/images/pqc-hotel.jpg" alt="호텔 전경" class="w-full h-52 md:h-72 object-cover">
+                        <img src="assets/images/pqc-hotel-room.jpg" alt="객실" class="w-full h-52 md:h-72 object-cover">
+                    </div>
+                    <div class="p-6 md:p-8">
+                        <h3 class="text-xl font-bold font-title mb-2">베스트웨스턴 호텔 또는 동급 (5성급)</h3>
+                        <p class="text-sm text-slate-600">2인 1실 · 북앤바이 · 현지 사정에 따라 동급으로 안내될 수 있습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SCHEDULE OKI -->
+    <div class="opt-panel" data-opt="oki">
+        <section id="schedule-oki" class="py-16 bg-slate-50 border-t border-slate-100">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold font-title">오키나와 세부 일정</h2>
+                        <p class="text-slate-500 text-sm mt-1">※ 항공 및 현지 사정에 의해 변동될 수 있습니다.</p>
+                    </div>
+                    <div class="text-center sm:text-right shrink-0 no-print">
+                        <button type="button" onclick="handlePrint()" class="inline-flex items-center gap-1.5 bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
+                            <i class="fa-solid fa-print"></i> 일정표 인쇄하기
+                        </button>
+                        <p class="mt-2 text-xs text-slate-500 leading-relaxed max-w-[16rem] mx-auto sm:ml-auto sm:mr-0">모바일(카카오톡 등)에서는<br>인쇄가 어려울 수 있어요.<br>다른 브라우저나 PC에서 열어 주세요.</p>
+                    </div>
+                </div>
+                <div class="flex overflow-x-auto no-scrollbar gap-2 mb-8 justify-start md:justify-center">
+                    <button class="tab-btn active shrink-0 px-5 py-3 rounded-2xl border-2 border-tm bg-tm text-white font-bold text-sm" onclick="openTab(event,'oki-day1','oki')">1일차 (1/7)</button>
+                    <button class="tab-btn shrink-0 px-5 py-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-500 font-bold text-sm" onclick="openTab(event,'oki-day2','oki')">2일차 (1/8)</button>
+                    <button class="tab-btn shrink-0 px-5 py-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-500 font-bold text-sm" onclick="openTab(event,'oki-day3','oki')">3일차 (1/9)</button>
+                    <button class="tab-btn shrink-0 px-5 py-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-500 font-bold text-sm" onclick="openTab(event,'oki-day4','oki')">4일차 (1/10)</button>
+                </div>
+                <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                    <div id="oki-day1" class="tab-content p-8">
+                        <h3 class="font-bold text-2xl font-title mb-1">인천 → 나하 · 시장 · 국제거리</h3>
+                        <p class="text-tm text-sm font-medium mb-6">석:일정식 · ♨온천욕</p>
+                        <div class="space-y-5">
+                            <div class="relative pl-8 border-l-2 border-orange-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-tm"></div>
+                                <h4 class="font-bold">11:25 인천 출발 (ZE631) · 14:00 나하 도착</h4></div>
+                            <div class="relative pl-8 border-l-2 border-orange-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-orange-500"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">마키시 공설시장</h4><p class="text-sm text-slate-500 mt-1">나하의 부엌</p></div>
+                                <img src="assets/images/oki-makishi.jpg" alt="마키시" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-orange-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-pink-500"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">국제거리</h4></div>
+                                <img src="assets/images/oki-kokusai.jpg" alt="국제거리" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-orange-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-slate-600"></div>
+                                <h4 class="font-bold">호텔 투숙 · 온천욕</h4><p class="text-sm text-slate-500">르와지르 나하 또는 동급</p></div>
+                        </div>
+                    </div>
+                    <div id="oki-day2" class="tab-content hidden p-8">
+                        <h3 class="font-bold text-2xl font-title mb-1">북부 해양 · 절경</h3>
+                        <p class="text-tm text-sm font-medium mb-6">조:호텔 · 중:현지식 · 석:야키니쿠 무제한</p>
+                        <div class="space-y-5">
+                            <div class="relative pl-8 border-l-2 border-cyan-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-cyan-600"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">해양박공원 (츄라우미)</h4><p class="text-sm text-slate-500">오키짱극장 불포함(보수유지기간)</p></div>
+                                <img src="assets/images/oki-churaumi.jpg" alt="츄라우미" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-cyan-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-sky-500"></div>
+                                <h4 class="font-bold">카리유시비치 글래스보트</h4></div>
+                            <div class="relative pl-8 border-l-2 border-cyan-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-emerald-500"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">만좌모</h4></div>
+                                <img src="assets/images/oki-manzamo.jpg" alt="만좌모" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-cyan-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-indigo-500"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">아메리칸 빌리지</h4></div>
+                                <img src="assets/images/oki-american.jpg" alt="아메리칸빌리지" class="schedule-thumb"></div></div>
+                        </div>
+                    </div>
+                    <div id="oki-day3" class="tab-content hidden p-8">
+                        <h3 class="font-bold text-2xl font-title mb-1">남부 · 오키나와월드 · 평화공원</h3>
+                        <p class="text-tm text-sm font-medium mb-6">조:호텔 · 중:현지식 · 석:샤브샤브</p>
+                        <div class="space-y-5">
+
+                            <div class="relative pl-8 border-l-2 border-violet-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-sky-500"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">치넨미사키공원</h4><p class="text-sm text-slate-500 mt-1">태평양 전망</p></div>
+                                <img src="assets/images/oki-chinen.jpg" alt="치넨미사키" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-violet-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-violet-600"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">오키나와월드 (프리패스)</h4><p class="text-sm text-slate-500 mt-1">에이사 공연 10:30 / 12:30 / 14:30</p></div>
+                                <img src="assets/images/oki-world.jpg" alt="오키나와월드" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-violet-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-slate-600"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">평화기념공원</h4><p class="text-sm text-slate-500 mt-1">기념자료관 불포함 (약 350엔)</p></div>
+                                <img src="assets/images/oki-peace.jpg" alt="평화공원" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-violet-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-amber-700"></div>
+                                <h4 class="font-bold">마사히로주조 · 샤브샤브 석식</h4></div>
+                        </div>
+                    </div>
+                    <div id="oki-day4" class="tab-content hidden p-8">
+                        <h3 class="font-bold text-2xl font-title mb-1">슈리성 · 면세 · 귀국</h3>
+                        <p class="text-tm text-sm font-medium mb-6">조:호텔 · 중:현지식</p>
+                        <div class="space-y-5">
+                            <div class="relative pl-8 border-l-2 border-rose-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-red-600"></div>
+                                <div class="schedule-media"><div class="schedule-desc"><h4 class="font-bold">슈리성공원</h4><p class="text-sm text-slate-500 mt-1">정전 재건견학 불포함 (약 400엔)</p></div>
+                                <img src="assets/images/oki-shuri.jpg" alt="슈리성" class="schedule-thumb"></div></div>
+                            <div class="relative pl-8 border-l-2 border-rose-200"><div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-slate-500"></div>
+                                <h4 class="font-bold">면세점 쇼핑 1회 · 공항 이동</h4></div>
+                            <div class="bg-blue-50 p-5 rounded-2xl border border-blue-200 text-center">
+                                <p class="font-bold">✈️ 15:00 나하 출발 (ZE632) → 17:50 인천 도착</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="hotel-oki" class="py-16 bg-white border-t border-slate-200">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <div class="text-center mb-8">
+                    <span class="text-tm font-black tracking-widest text-xs uppercase">Accommodation</span>
+                    <h2 class="text-2xl font-bold font-title mt-2">오키나와 숙소 (3박)</h2>
+                </div>
+                <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-md">
+                    <div class="grid md:grid-cols-2">
+                        <img src="assets/images/oki-hotel.jpg" alt="호텔 전경" class="w-full h-52 md:h-72 object-cover">
+                        <img src="assets/images/oki-hotel-room.jpg" alt="객실" class="w-full h-52 md:h-72 object-cover">
+                    </div>
+                    <div class="p-6 md:p-8">
+                        <h3 class="text-xl font-bold font-title mb-2">르와지르 호텔 나하 또는 동급 (4성급)</h3>
+                        <p class="text-sm text-slate-600">2인 1실 · 온천욕 체험 · 북앤바이 · 현지 사정에 따라 동급으로 안내될 수 있습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="visit-japan" class="py-14 bg-blue-50 border-t border-blue-100">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <div class="text-center mb-8">
+                    <span class="text-tm font-black tracking-widest text-xs uppercase">Visit Japan Web</span>
+                    <h2 class="text-2xl font-bold font-title mt-2">비짓재팬 웹 사전 작성</h2>
+                    <p class="text-sm text-slate-600 mt-2">입국·세관 QR을 출발 전 준비하면 나하공항 수속이 수월합니다.</p>
+                </div>
+                <div class="bg-white rounded-3xl border border-blue-100 shadow-lg p-6 md:p-8 space-y-4 text-sm text-slate-700">
+                    <ol class="list-decimal list-inside space-y-2 font-medium">
+                        <li>Visit Japan Web 계정 생성 후 여권 정보 등록</li>
+                        <li>입국심사·세관 신고 작성 후 QR 발급 (스크린샷 저장 권장)</li>
+                        <li>나하 도착 후 심사대에서 QR 제시</li>
+                    </ol>
+                    <div class="bg-slate-50 rounded-xl p-4 border text-xs">
+                        <p class="font-bold text-tm mb-1">숙소 주소 (영문 입력)</p>
+                        <p>Loisir Hotel Naha, 3-2-1 Nishi, Naha-shi, Okinawa 900-0036, Japan</p>
+                    </div>
+                    <a href="https://www.vjw.digital.go.jp/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-tm text-white font-bold px-5 py-3 rounded-xl">Visit Japan Web 열기</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="opt-panel" data-opt="pqc">
+        <section id="pqc-insurance" class="py-10 bg-amber-50/80 border-t border-amber-100">
+            <div class="container mx-auto px-4 max-w-3xl text-center">
+                <h3 class="font-bold text-lg text-amber-900 mb-2">베트남 여행자보험 · PAI 안내</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">개인 여행자보험(PIA) 가입을 권장합니다. 해상·테마파크·바구니배 등 액티비티 이용 시 보험 적용 범위를 출발 전 확인해 주세요.</p>
+            </div>
+        </section>
+    </div>
+
+    <section id="assistant" class="py-16 bg-white border-t border-slate-200">
+        <div class="container mx-auto px-4 max-w-5xl">
+            <div class="text-center mb-10">
+                <span class="text-tm font-black tracking-widest text-xs uppercase">Travel Assistant</span>
+                <h2 class="text-2xl md:text-3xl font-bold font-title mt-2">여행비서</h2>
+                <p class="text-slate-500 text-sm mt-2">선택하신 일정에 맞춰 날씨·환율 정보가 표시됩니다.</p>
+            </div>
+            <div class="opt-panel" data-opt="pqc">
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-cyan-50 rounded-2xl p-5 border border-cyan-100">
+                        <h3 class="font-bold mb-3">푸꾸옥 날씨</h3>
+                        <div id="weather-pqc" class="weather-grid"></div>
+                        <p class="text-xs text-slate-500 mt-3">1월 푸꾸옥은 건기·따뜻합니다. 얇은 겉옷·선크림을 준비해 주세요.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                        <h3 class="font-bold mb-2">동 화(VND) 계산기</h3>
+                        <p id="fx-note-pqc" class="text-xs text-slate-500 mb-3">환율 불러오는 중…</p>
+                        <div class="flex gap-2 items-center">
+                            <input id="vnd-input" type="number" class="border rounded-lg px-3 py-2 w-full text-sm" placeholder="VND" oninput="convertVnd()">
+                            <span class="text-sm font-bold whitespace-nowrap">→ <span id="krw-output-pqc">0</span>원</span>
+                        </div>
+                        <div id="price-compare-pqc" class="mt-4 text-xs text-slate-600"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="opt-panel" data-opt="oki">
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100">
+                        <h3 class="font-bold mb-3">나하 날씨</h3>
+                        <div id="weather-oki" class="weather-grid"></div>
+                        <p class="text-xs text-slate-500 mt-3">1월 오키나와는 낮 따뜻·저녁 선선. 가디건을 챙겨 주세요.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                        <h3 class="font-bold mb-2">엔화(JPY) 계산기</h3>
+                        <p id="fx-note-oki" class="text-xs text-slate-500 mb-3">환율 불러오는 중…</p>
+                        <div class="flex gap-2 items-center">
+                            <input id="jpy-input" type="number" class="border rounded-lg px-3 py-2 w-full text-sm" placeholder="JPY" oninput="convertJpy()">
+                            <span class="text-sm font-bold whitespace-nowrap">→ <span id="krw-output-oki">0</span>원</span>
+                        </div>
+                        <div id="price-compare-oki" class="mt-4 text-xs text-slate-600"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="check" class="py-16 bg-slate-50 border-t border-slate-100">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold font-title">🎒 준비물 체크리스트</h2>
+                <p class="text-sm text-slate-500 mt-2">선택 일정에 맞는 항목을 체크해 보세요.</p>
+            </div>
+            <div class="opt-panel" data-opt="pqc">
+                <div id="checklist-pqc" class="grid sm:grid-cols-2 gap-2 mb-4"></div>
+                <button type="button" onclick="resetChecklist('pqc')" class="text-xs text-slate-500 underline">체크 초기화</button>
+            </div>
+            <div class="opt-panel" data-opt="oki">
+                <div id="checklist-oki" class="grid sm:grid-cols-2 gap-2 mb-4"></div>
+                <button type="button" onclick="resetChecklist('oki')" class="text-xs text-slate-500 underline">체크 초기화</button>
+            </div>
+            <textarea id="travel-memo" rows="3" placeholder="나만의 메모 (자동 저장)" class="mt-6 w-full border border-slate-200 rounded-xl p-3 text-sm"></textarea>
+        </div>
+    </section>
+
+    <section id="esg" class="py-16 bg-emerald-50/60 border-t border-emerald-100">
+        <div class="container mx-auto px-4 max-w-4xl text-center">
+            <h2 class="text-2xl font-bold font-title text-emerald-900 mb-2">ESG · 디지털 전환(DX)</h2>
+            <p class="text-sm text-slate-600 mb-6">종이 일정표 대신 스마트 가이드북으로 환경 부담을 줄입니다.</p>
+            <p class="text-base font-bold text-emerald-800 mb-6">📊 실시간 가이드북 열람 : <span id="tm-view-count">…</span>회</p>
+            <div class="grid grid-cols-3 gap-3 max-w-lg mx-auto mb-6">
+                <div class="bg-white rounded-xl p-4 border border-emerald-100"><p class="esg-stat-label text-xs text-slate-500">종이 절감</p><p id="esg-paper" class="font-black text-tm">-</p></div>
+                <div class="bg-white rounded-xl p-4 border border-emerald-100"><p class="esg-stat-label text-xs text-slate-500">탄소 감소</p><p id="esg-carbon" class="font-black text-tm">-</p></div>
+                <div class="bg-white rounded-xl p-4 border border-emerald-100"><p class="esg-stat-label text-xs text-slate-500">물 절약</p><p id="esg-water" class="font-black text-tm">-</p></div>
+            </div>
+            <p id="esg-desc" class="text-sm text-slate-600"></p>
+        </div>
+    </section>
+
+    <section id="contact" class="py-16 bg-white border-t border-slate-200">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl font-bold font-title text-red-700">비상연락 및 안전망</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-red-50 border border-red-100 rounded-2xl p-5 text-center">
+                    <p class="text-xs font-bold text-red-600 mb-1">담당</p>
+                    <p class="font-bold">배부근 대표</p>
+                    <a href="tel:010-9362-8265" class="text-tm font-bold text-sm">010-9362-8265</a>
+                </div>
+                <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5 text-center">
+                    <p class="text-xs font-bold text-tm mb-1">총괄</p>
+                    <p class="font-bold">이재명 대표</p>
+                    <a href="tel:010-9443-7881" class="text-tm font-bold text-sm">010-9443-7881</a>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-center">
+                    <p class="text-xs font-bold text-slate-600 mb-1">운영</p>
+                    <p class="font-bold">조혁 이사</p>
+                    <a href="tel:010-4249-4026" class="text-tm font-bold text-sm">010-4249-4026</a>
+                    <p class="text-xs text-slate-500 mt-1">사무실 033-562-2551</p>
+                </div>
+            </div>
+            <div class="opt-panel" data-opt="pqc">
+                <div class="bg-amber-50 rounded-2xl p-5 border border-amber-100 text-sm">
+                    <p class="font-bold text-amber-900 mb-2">주베트남 대한민국 총영사관 (푸꾸옥 관할)</p>
+                    <p>호치민 또는 다낭 총영사관 · 영사콜센터 ☎ +82-2-3210-0404</p>
+                    <p class="mt-1">호치민 ☎ +84-28-3834-9304 · 다낭 ☎ +84-236-384-0006</p>
+                </div>
+            </div>
+            <div class="opt-panel" data-opt="oki">
+                <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100 text-sm">
+                    <p class="font-bold text-tm mb-2">주후쿠오카 대한민국 총영사관 (오키나와 관할)</p>
+                    <p>☎ +81-92-771-0461 · 영사콜센터 24시간 ☎ +82-2-3210-0404</p>
+                    <p class="mt-2">류큜대학병원 ☎ +81-98-894-1166</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="no-print bg-slate-900 text-white py-10 px-4">
+        <div class="container mx-auto max-w-4xl text-center">
+            <p class="text-sm text-slate-300 mb-4">📊 실시간 가이드북 열람 : <span id="tm-view-count-footer">…</span>회</p>
+            <div class="bg-gradient-to-r from-tm to-cyan-700 rounded-2xl p-6 mb-6">
+                <p class="font-bold text-lg mb-3">우리 모임·학교·기관도 스마트 가이드북으로 여행 준비하기</p>
+                <button type="button" onclick="openTmInquiryModal()" class="bg-white text-tm font-extrabold px-6 py-3 rounded-xl shadow-lg">투어메이커 맞춤 견적 · 상담 문의</button>
+            </div>
+            <p class="text-xs text-slate-400">© Tourmaker · 숙암향우회 270107_Sukam</p>
+        </div>
+    </footer>
+
+    <div id="tm-inquiry-modal" class="hidden fixed inset-0 z-[200] items-end md:items-center justify-center bg-black/50 p-4">
+        <div class="bg-white rounded-t-3xl md:rounded-3xl w-full max-w-md p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg">투어메이커 여행·가이드북 문의</h3>
+                <button type="button" onclick="closeTmInquiryModal()" class="text-slate-400 text-xl">&times;</button>
+            </div>
+            <div class="space-y-3 text-sm">
+                <a href="https://pf.kakao.com/_fxjxiQn/chat" target="_blank" rel="noopener" onclick="trackTmInquiry('kakao')" class="block p-4 rounded-xl border-2 border-yellow-300 bg-yellow-50 font-bold">💬 카카오톡 비즈니스 1:1 상담 (전담: 조혁 이사)</a>
+                <a id="tm-sms-inquiry-link" href="#" onclick="trackTmInquiry('sms')" class="block p-4 rounded-xl border border-slate-200 bg-slate-50 font-bold">📝 10초 문자(SMS) 간편 견적 문의</a>
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
+                    <p class="font-bold">📞 직통 전화</p>
+                    <p>조혁 이사 <a href="tel:010-4249-4026" class="text-tm font-bold">010-4249-4026</a></p>
+                    <p>이재명 대표 <a href="tel:010-9443-7881" class="text-tm font-bold">010-9443-7881</a></p>
+                    <p>사무실 <a href="tel:033-562-2551" class="text-tm font-bold">033-562-2551</a></p>
+                </div>
+                <a href="https://tourmaker.kr/?utm_source=smart_guidebook&utm_medium=inquiry_modal&utm_campaign=270107_Sukam" target="_blank" rel="noopener" onclick="trackTmInquiry('website')" class="block p-4 rounded-xl border border-tm bg-blue-50 text-tm font-bold text-center">🌐 tourmaker.kr 공식 홈페이지</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="print-area">
+    <div class="print-pqc opt-panel" data-opt="pqc">
+        <div class="print-page-container">
+            <div class="print-header"><img src="assets/images/tourmaker-logo.png" alt="Tourmaker"><span class="print-doc">TM-270107-PQC · 1/2</span></div>
+            <h1 class="print-title">숙암향우회 · 푸꾸옥 3박5일 일정표</h1>
+            <div class="print-overview">
+                <span><span class="label">기간</span>2027.1.7~1.11</span>
+                <span><span class="label">인원</span>14명(14+0) · 7TWIN</span>
+                <span><span class="label">항공</span>LJ135/136</span>
+            </div>
+            <table class="print-table">
+                <thead><tr><th>일자</th><th>일정</th><th>식사</th></tr></thead>
+                <tbody>
+                    <tr><td class="print-col-date">1/7</td><td class="print-col-desc"><ul class="print-desc-list"><li><span class="print-time-tag">LJ135</span>17:05 ICN→21:00 PQC · 현지인가이드 미팅</li></ul><p class="print-hotel">🏨 베스트웨스턴 또는 동급 5성</p></td><td class="print-col-meal"><div class="print-meal"><div><strong>석</strong>기내</div></div></td></tr>
+                    <tr><td class="print-col-date">1/8</td><td class="print-col-desc"><ul class="print-desc-list"><li>혼똠 해상케이블카·썬월드</li><li>선셋타운·버기·야시장·Kiss of the Sea</li></ul></td><td class="print-col-meal"><div class="print-meal"><div><strong>조</strong>호텔</div><div><strong>중</strong>뷔페</div><div><strong>석</strong>김치전골</div></div></td></tr>
+                    <tr><td class="print-col-date">1/9</td><td class="print-col-desc"><ul class="print-desc-list"><li>바구니배 · 빈펄사파리 · 그랜드월드 · 즈엉동 야시장</li></ul></td><td class="print-col-meal"><div class="print-meal"><div><strong>조</strong>호텔</div><div><strong>중</strong>현지</div><div><strong>석</strong>쌈밥</div></div></td></tr>
+                    <tr><td class="print-col-date">1/10</td><td class="print-col-desc"><ul class="print-desc-list"><li>호국사·수오이짠·코코넛수용소·진주·후추·마사지90분</li><li><span class="print-highlight">22:10 LJ136 출발</span></li></ul></td><td class="print-col-meal"><div class="print-meal"><div><strong>조</strong>호텔</div><div><strong>중</strong>가정식</div><div><strong>석</strong>씨푸드</div></div></td></tr>
+                    <tr><td class="print-col-date">1/11</td><td class="print-col-desc"><ul class="print-desc-list"><li>05:20 인천 도착</li></ul></td><td class="print-col-meal">-</td></tr>
+                </tbody>
+            </table>
+            <div class="print-contacts"><span><span class="pc-role">담당</span>배부근 010-9362-8265</span><span><span class="pc-role">투어메이커</span>이재명·조혁</span></div>
+        </div>
+        <div class="print-page-container print-page-break">
+            <div class="print-header"><img src="assets/images/tourmaker-logo.png" alt="Tourmaker"><span class="print-doc">TM-270107-PQC · 2/2</span></div>
+            <h1 class="print-title">준비물 · 진에어 체크인 요약</h1>
+            <div class="print-checklist"><h2>□ 출발 전 준비물</h2><div class="print-checklist-grid">
+                <div class="print-check-item"><span class="print-check-box"></span>여권(6개월↑)</div>
+                <div class="print-check-item"><span class="print-check-box"></span>USD/VND 현금·카드</div>
+                <div class="print-check-item"><span class="print-check-box"></span>220V→110V 어댑터</div>
+                <div class="print-check-item"><span class="print-check-box"></span>수영복·아쿠아슈즈·방수팩</div>
+                <div class="print-check-item"><span class="print-check-box"></span>선크림·모자</div>
+                <div class="print-check-item"><span class="print-check-box"></span>보조배터리(기내 휴대)</div>
+            </div></div>
+            <div class="print-checklist"><h2>✈ 진에어 LJ135/LJ136</h2><ul class="print-desc-list">
+                <li><span class="print-highlight">항공권 발권(E-티켓 발행) 완료 후</span> 온라인 체크인·무료 좌석 (출발 24h~1h 전)</li>
+                <li>인천 개별 수속 · 일행 여권 함께 제시 시 인접 좌석 배정 도움</li>
+                <li>보조배터리 위탁 금지·선반 보관 불가·1인 2개·160Wh 이하</li>
+            </ul></div>
+            <div class="print-qr-box"><img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Findadady.github.io%2F270107_Sukam%2F" alt="QR"><div><strong>스마트 가이드북</strong><br>https://indadady.github.io/270107_Sukam/</div></div>
+        </div>
+    </div>
+    <div class="print-oki opt-panel" data-opt="oki">
+        <div class="print-page-container">
+            <div class="print-header"><img src="assets/images/tourmaker-logo.png" alt="Tourmaker"><span class="print-doc">TM-270107-OKI · 1/2</span></div>
+            <h1 class="print-title">숙암향우회 · 오키나와 3박4일 일정표</h1>
+            <div class="print-overview">
+                <span><span class="label">기간</span>2027.1.7~1.10</span>
+                <span><span class="label">인원</span>12명(12+1TG) · 6TWIN</span>
+                <span><span class="label">항공</span>ZE631/632</span>
+            </div>
+            <table class="print-table">
+                <thead><tr><th>일자</th><th>일정</th><th>식사</th></tr></thead>
+                <tbody>
+                    <tr><td class="print-col-date">1/7</td><td class="print-col-desc"><ul class="print-desc-list"><li><span class="print-time-tag">ZE631</span>11:25 ICN→14:00 OKA</li><li>마키시·국제거리·온천</li></ul><p class="print-hotel">🏨 르와지르 나하 또는 동급</p></td><td class="print-col-meal"><div class="print-meal"><div><strong>석</strong>일정식</div></div></td></tr>
+                    <tr><td class="print-col-date">1/8</td><td class="print-col-desc"><ul class="print-desc-list"><li>츄라우미·글래스보트·만좌모·아메리칸빌리지</li></ul></td><td class="print-col-meal"><div class="print-meal"><div><strong>조</strong>호텔</div><div><strong>중</strong>현지</div><div><strong>석</strong>야키니쿠</div></div></td></tr>
+                    <tr><td class="print-col-date">1/9</td><td class="print-col-desc"><ul class="print-desc-list"><li>치넨미사키·오키나와월드·평화공원·마사히로</li></ul></td><td class="print-col-meal"><div class="print-meal"><div><strong>조</strong>호텔</div><div><strong>중</strong>현지</div><div><strong>석</strong>샤브샤브</div></div></td></tr>
+                    <tr><td class="print-col-date">1/10</td><td class="print-col-desc"><ul class="print-desc-list"><li>슈리성·면세·<span class="print-highlight">15:00 ZE632</span></li></ul></td><td class="print-col-meal"><div class="print-meal"><div><strong>조</strong>호텔</div><div><strong>중</strong>현지</div></div></td></tr>
+                </tbody>
+            </table>
+            <div class="print-contacts"><span><span class="pc-role">담당</span>배부근 010-9362-8265</span><span><span class="pc-role">스루가이드</span>전일정</span></div>
+        </div>
+        <div class="print-page-container print-page-break">
+            <div class="print-header"><img src="assets/images/tourmaker-logo.png" alt="Tourmaker"><span class="print-doc">TM-270107-OKI · 2/2</span></div>
+            <h1 class="print-title">준비물 · 이스타 체크인 · Visit Japan</h1>
+            <div class="print-checklist"><h2>□ 출발 전 준비물</h2><div class="print-checklist-grid">
+                <div class="print-check-item"><span class="print-check-box"></span>여권 · Visit Japan Web QR</div>
+                <div class="print-check-item"><span class="print-check-box"></span>엔화·카드 · 110V 어댑터</div>
+                <div class="print-check-item"><span class="print-check-box"></span>온천용 수건·슬리퍼</div>
+                <div class="print-check-item"><span class="print-check-box"></span>보조배터리(기내 휴대)</div>
+            </div></div>
+            <div class="print-checklist"><h2>✈ 이스타 ZE631/ZE632</h2><ul class="print-desc-list">
+                <li><span class="print-highlight">항공권 발권(E-티켓 발행) 완료 후</span> 온라인 체크인·무료 좌석</li>
+                <li>공항 카운터 · 스루가이드 지원 · 인접 좌석 배정</li>
+                <li>보조배터리 위탁 금지·선반 보관 불가</li>
+            </ul></div>
+            <div class="print-qr-box"><img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Findadady.github.io%2F270107_Sukam%2F" alt="QR"><div><strong>스마트 가이드북</strong><br>https://indadady.github.io/270107_Sukam/</div></div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js"></script>
+    <script>
+        const TEST_DATE = "";
+        const TM_GUIDEBOOK_SLUG = '270107_Sukam';
+        const TM_GUIDEBOOK_NAME = '숙암향우회 푸꾸옥·오키나와 선택 가이드북';
+        const EVENT_DAYS_PQC = {'2027-01-07':'pqc-day1','2027-01-08':'pqc-day2','2027-01-09':'pqc-day3','2027-01-10':'pqc-day4','2027-01-11':'pqc-day5'};
+        const EVENT_DAYS_OKI = {'2027-01-07':'oki-day1','2027-01-08':'oki-day2','2027-01-09':'oki-day3','2027-01-10':'oki-day4'};
+        const MAP_DAY_PQC = {'2027-01-07':'day1','2027-01-08':'day2','2027-01-09':'day3','2027-01-10':'day4','2027-01-11':'day5'};
+        const MAP_DAY_OKI = {'2027-01-07':'day1','2027-01-08':'day2','2027-01-09':'day3','2027-01-10':'day4'};
+        let currentOption = 'pqc';
+
+        function getCurrentOption(){ return document.body.classList.contains('opt-oki') ? 'oki' : 'pqc'; }
+        function getEventDays(){ return getCurrentOption() === 'pqc' ? EVENT_DAYS_PQC : EVENT_DAYS_OKI; }
+        function getMapDayMap(){ return getCurrentOption() === 'pqc' ? MAP_DAY_PQC : MAP_DAY_OKI; }
+
+        function setOption(opt){
+            currentOption = opt;
+            document.body.classList.toggle('opt-pqc', opt === 'pqc');
+            document.body.classList.toggle('opt-oki', opt === 'oki');
+            document.getElementById('card-pqc')?.classList.toggle('active-pqc', opt === 'pqc');
+            document.getElementById('card-oki')?.classList.toggle('active-oki', opt === 'oki');
+            const heroDate = document.getElementById('hero-date');
+            if(heroDate) heroDate.textContent = opt === 'pqc' ? '2027. 1. 7(목) ~ 1. 11(월) · 푸꾸옥' : '2027. 1. 7(목) ~ 1. 10(일) · 오키나와';
+            buildMapButtons();
+            initEventDayUI();
+            if(mapInited) drawMap(getTodayMapKey() || (isMobileView() ? 'day1' : 'all'));
+            fetchWeather();
+            initESG();
+        }
+
+        function getGuidebookToday(){
+            const q = new URLSearchParams(location.search).get('test_date');
+            if(q && /^\d{4}-\d{2}-\d{2}$/.test(q)) return q;
+            if(TEST_DATE) return TEST_DATE;
+            return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
+        }
+        function ymdDiffDays(a,b){
+            const [ay,am,ad]=a.split('-').map(Number);
+            const [by,bm,bd]=b.split('-').map(Number);
+            return Math.round((Date.UTC(ay,am-1,ad)-Date.UTC(by,bm-1,bd))/86400000);
+        }
+        function getTodayDayKey(){ return getEventDays()[getGuidebookToday()] || null; }
+        function getTodayMapKey(){ return getMapDayMap()[getGuidebookToday()] || null; }
+
+        function openTab(evt, tabId, opt){
+            const scope = document.querySelector(`.opt-panel[data-opt="${opt}"]`) || document;
+            scope.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            scope.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active','bg-tm','bg-cyan-600','text-white','border-tm','border-cyan-600');
+                btn.classList.add('bg-white','text-slate-500','border-slate-200');
+            });
+            document.getElementById(tabId)?.classList.remove('hidden');
+            const t = evt.currentTarget;
+            t.classList.add('active','text-white');
+            if(opt==='pqc'){ t.classList.add('bg-cyan-600','border-cyan-600'); }
+            else { t.classList.add('bg-tm','border-tm'); }
+            t.classList.remove('bg-white','text-slate-500','border-slate-200');
+        }
+        function activateDayTab(dayKey){
+            const opt = dayKey.startsWith('pqc') ? 'pqc' : 'oki';
+            const btn = document.querySelector(`.opt-panel[data-opt="${opt}"] .tab-btn[onclick*="'${dayKey}'"]`);
+            if(btn) openTab({currentTarget: btn}, dayKey, opt);
+        }
+        function goToTodaySchedule(){
+            const dk = getTodayDayKey();
+            if(dk) activateDayTab(dk);
+            const opt = getCurrentOption();
+            const sid = opt === 'pqc' ? 'schedule' : 'schedule-oki';
+            document.querySelector(`.opt-panel[data-opt="${opt}"] #${sid}`)?.scrollIntoView({behavior:'smooth'});
+        }
+        function goToTodayRoute(){
+            const mk = getTodayMapKey();
+            if(mk && typeof filterMap === 'function') filterMap(mk);
+            document.getElementById('map-section')?.scrollIntoView({behavior:'smooth'});
+        }
+        function initEventDayUI(){
+            const bar = document.getElementById('event-day-bar');
+            if(!bar) return;
+            const dk = getTodayDayKey();
+            bar.classList.toggle('hidden', !dk);
+            document.body.classList.toggle('event-day', !!dk);
+            if(dk){
+                activateDayTab(dk);
+                const mk = getTodayMapKey();
+                if(mk && typeof setMapBtnActive === 'function') setMapBtnActive(mk);
+            }
+        }
+        function isInAppBrowser(){
+            const ua = navigator.userAgent.toLowerCase();
+            return /kakaotalk|naver|line\/|fbav|instagram|daumapps|everytimeapp|band\//.test(ua);
+        }
+        function handlePrint(){
+            if(isInAppBrowser()){
+                alert('이 앱에서는 인쇄가 어려워요.\n다른 브라우저나 PC에서 열어 주세요.');
+                return;
+            }
+            window.print();
+        }
+        function shareLink(){
+            const url = location.href;
+            if(navigator.share) navigator.share({title: document.title, url}).catch(()=>{});
+            else navigator.clipboard?.writeText(url);
+        }
+
+        const CHECK_ITEMS = {
+            pqc: ['★여권 원본★ (6개월↑)','베트남 e-Visa/입국 확인','USD·VND 현금·카드','220V 어댑터','수영복·아쿠아슈즈·방수팩','선크림·모자·우비','보조배터리(기내)','편한 신발','개인 상비약','팁용 소액 USD'],
+            oki: ['★여권 원본★','Visit Japan Web QR','엔화·카드','110V 어댑터','온천용 수건·슬리퍼','보조배터리(기내)','가디건·양말','선글라스·자외선차단','멀미약','편한 신발']
+        };
+        function renderChecklist(opt){
+            const container = document.getElementById('checklist-'+opt);
+            if(!container) return;
+            const key = 'tm_270107_'+opt+'_check';
+            const saved = JSON.parse(localStorage.getItem(key)||'{}');
+            container.innerHTML = CHECK_ITEMS[opt].map((label,i)=>{
+                const id = 'chk_'+opt+'_'+i;
+                const checked = saved[id] ? 'checked' : '';
+                const cls = label.includes('★') ? 'text-sm font-bold text-red-600' : 'text-sm text-slate-700';
+                return `<label class="flex items-center gap-2 bg-white border border-slate-100 rounded-lg px-3 py-2 cursor-pointer"><input type="checkbox" id="${id}" ${checked} class="h-4 w-4 text-tm rounded"><span class="${cls}">${label}</span></label>`;
+            }).join('');
+            container.querySelectorAll('input').forEach(cb=>{
+                cb.addEventListener('change',()=>{
+                    const s = JSON.parse(localStorage.getItem(key)||'{}');
+                    s[cb.id]=cb.checked;
+                    localStorage.setItem(key, JSON.stringify(s));
+                });
+            });
+        }
+        function resetChecklist(opt){
+            if(confirm('체크리스트를 초기화할까요?')){
+                localStorage.removeItem('tm_270107_'+opt+'_check');
+                renderChecklist(opt);
+            }
+        }
+        renderChecklist('pqc'); renderChecklist('oki');
+        (function(){
+            const memo = document.getElementById('travel-memo');
+            if(!memo) return;
+            const KEY = 'tm_270107_memo';
+            memo.value = localStorage.getItem(KEY)||'';
+            memo.addEventListener('input', ()=> localStorage.setItem(KEY, memo.value));
+        })();
+
+        function initESG(){
+            const people = getCurrentOption()==='pqc' ? 14 : 12;
+            const paper = document.getElementById('esg-paper');
+            const carbon = document.getElementById('esg-carbon');
+            const water = document.getElementById('esg-water');
+            const desc = document.getElementById('esg-desc');
+            if(paper) paper.textContent = (people*8)+'장';
+            if(carbon) carbon.textContent = (people*38)+'g';
+            if(water) water.textContent = (people*75)+'L';
+            if(desc) desc.innerHTML = `참여 인원 기준 종이 약 <strong>${((people*8)/500).toFixed(1)}그루</strong> 상당 절감 효과를 기대할 수 있습니다.`;
+        }
+        initESG();
+
+        let vndKrw = 0.055, jpyKrw = 9.5;
+        async function fetchFx(){
+            try{
+                const [v,j] = await Promise.all([
+                    fetch('https://open.er-api.com/v6/latest/USD').then(r=>r.json()),
+                    fetch('https://open.er-api.com/v6/latest/JPY').then(r=>r.json())
+                ]);
+                if(v?.rates?.KRW && v?.rates?.VND) vndKrw = (v.rates.KRW/v.rates.VND)*1.015;
+                if(j?.rates?.KRW) jpyKrw = j.rates.KRW*1.015;
+            }catch(e){}
+            const np = document.getElementById('fx-note-pqc');
+            const no = document.getElementById('fx-note-oki');
+            if(np) np.textContent = '1,000 VND ≈ '+Math.round(vndKrw*1000)+'원 (참고)';
+            if(no) no.textContent = '1엔 ≈ '+jpyKrw.toFixed(2)+'원 (참고)';
+            renderPrices();
+        }
+        function convertVnd(){
+            const n = Number(document.getElementById('vnd-input')?.value||0);
+            const o = document.getElementById('krw-output-pqc');
+            if(o) o.textContent = Math.round(n*vndKrw).toLocaleString('ko-KR');
+        }
+        function convertJpy(){
+            const n = Number(document.getElementById('jpy-input')?.value||0);
+            const o = document.getElementById('krw-output-oki');
+            if(o) o.textContent = Math.round(n*jpyKrw).toLocaleString('ko-KR');
+        }
+        function renderPrices(){
+            const pqc = document.getElementById('price-compare-pqc');
+            if(pqc) pqc.innerHTML = [['쌀국수',65000],['코코넛',25000],['맥주',30000]].map(([n,v])=>`<div class="flex justify-between py-1"><span>${n}</span><span class="font-bold">${v.toLocaleString()}₫ · 약 ${Math.round(v*vndKrw).toLocaleString()}원</span></div>`).join('');
+            const oki = document.getElementById('price-compare-oki');
+            if(oki) oki.innerHTML = [['타코라이스',900],['생맥주',600],['기념품',1500]].map(([n,j])=>`<div class="flex justify-between py-1"><span>${n}</span><span class="font-bold">${j}엔 · 약 ${Math.round(j*jpyKrw).toLocaleString()}원</span></div>`).join('');
+        }
+        fetchFx();
+
+        async function fetchWeather(){
+            const opt = getCurrentOption();
+            const el = document.getElementById(opt==='pqc' ? 'weather-pqc' : 'weather-oki');
+            if(!el) return;
+            const lat = opt==='pqc' ? 10.23 : 26.21;
+            const lon = opt==='pqc' ? 103.96 : 127.68;
+            const tz = opt==='pqc' ? 'Asia/Ho_Chi_Minh' : 'Asia/Tokyo';
+            const days = opt==='pqc' ? 5 : 4;
+            try{
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(tz)}&forecast_days=${days}`);
+                const data = await res.json();
+                const codes = {0:['☀️','맑음'],1:['🌤️','맑음'],2:['⛅','구름'],3:['☁️','흐림'],61:['☔','비'],80:['🌦️','소나기']};
+                let html = '';
+                for(let i=0;i<Math.min(days,data.daily.time.length);i++){
+                    const d = new Date(data.daily.time[i]+'T12:00:00');
+                    const wd = ['일','월','화','수','목','금','토'][d.getDay()];
+                    const [em,lb] = codes[data.daily.weathercode[i]]||['☁️','흐림'];
+                    html += `<div class="weather-card bg-white rounded-xl p-2 text-center border"><p class="text-[10px] font-bold">${d.getMonth()+1}/${d.getDate()}(${wd})</p><p class="text-xl">${em}</p><p class="text-[11px]">${lb}</p><p class="text-[11px] text-slate-500">${Math.round(data.daily.temperature_2m_min[i])}°/${Math.round(data.daily.temperature_2m_max[i])}°</p></div>`;
+                }
+                el.innerHTML = html;
+            }catch(e){
+                el.innerHTML = '<p class="text-sm text-slate-500 col-span-4">날씨를 불러오지 못했습니다.</p>';
+            }
+        }
+        fetchWeather();
+
+        function openTmInquiryModal(){
+            const m = document.getElementById('tm-inquiry-modal');
+            const sms = document.getElementById('tm-sms-inquiry-link');
+            if(sms){
+                const ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                const body = encodeURIComponent(`[${TM_GUIDEBOOK_NAME} 보고 문의드립니다]\n• 단체/모임명: \n• 희망지역: \n• 예상인원 / 출발시기: `);
+                sms.href = `sms:010-4249-4026${ios?'&':'?'}body=${body}`;
+            }
+            m?.classList.remove('hidden'); m?.classList.add('flex');
+            trackTmInquiry('modal_open');
+        }
+        function closeTmInquiryModal(){
+            const m = document.getElementById('tm-inquiry-modal');
+            m?.classList.add('hidden'); m?.classList.remove('flex');
+        }
+        function trackTmInquiry(action){
+            try{ if(typeof gtag==='function') gtag('event','tm_guidebook_inquiry',{event_category:'lead',event_label:TM_GUIDEBOOK_SLUG+'_'+action}); }catch(e){}
+        }
+        async function initTmViewCounter(){
+            const els = [document.getElementById('tm-view-count'), document.getElementById('tm-view-count-footer')].filter(Boolean);
+            if(!els.length) return;
+            const hitKey = 'tm_hit_'+TM_GUIDEBOOK_SLUG;
+            const cacheKey = 'tm_cnt_'+TM_GUIDEBOOK_SLUG;
+            const already = sessionStorage.getItem(hitKey);
+            let count = null;
+            try{
+                const res = await fetch(`https://abacus.jasoncameron.dev/${already?'get':'hit'}/tourmaker.kr/${TM_GUIDEBOOK_SLUG}`);
+                if(res.ok){ const d = await res.json(); if(typeof d.value==='number'){ count=d.value; sessionStorage.setItem(hitKey,'1'); }}
+            }catch(e){}
+            if(count===null){
+                try{
+                    const res2 = await fetch(`https://tally.yuki.sh/hits/tourmaker/${TM_GUIDEBOOK_SLUG}.json${already?'?mode=read':''}`);
+                    if(res2.ok){ const d2 = await res2.json(); if(typeof d2.visit==='number'){ count=d2.visit; sessionStorage.setItem(hitKey,'1'); }}
+                }catch(e){}
+            }
+            if(count===null||count===0) count = parseInt(localStorage.getItem(cacheKey)||'1',10)||1;
+            else localStorage.setItem(cacheKey,String(count));
+            els.forEach(el=> el.textContent = count.toLocaleString());
+        }
+        initTmViewCounter();
+
+        /* ===== MAP ===== */
+        let mapInited=false, currentMap=null, mapLayers=[], mapDrawSeq=0, activeBus=null;
+        const osrmCache = {};
+        const spotsPqc = {
+            icn:{coords:[37.4602,126.4407],title:'인천',color:'#1e293b',icon:'✈️'},
+            pqc:{coords:[10.1698,103.9931],title:'푸꾸옥공항',color:'#1e293b',icon:'🛬'},
+            hotel:{coords:[10.217,103.96],title:'베스트웨스턴',color:'#0891b2',icon:'🏨'},
+            cable:{coords:[10.05,104.01],title:'혼똠케이블',color:'#0ea5e9',icon:'🚠'},
+            sunset:{coords:[10.05,104.02],title:'선셋타운',color:'#f59e0b',icon:'🌅'},
+            market:{coords:[10.22,103.96],title:'즈엉동야시장',color:'#db2777',icon:'🌃'},
+            safari:{coords:[10.35,103.85],title:'사파리',color:'#16a34a',icon:'🦁'},
+            grand:{coords:[10.33,103.84],title:'그랜드월드',color:'#7c3aed',icon:'🎡'},
+            hoquoc:{coords:[10.20,103.98],title:'호국사',color:'#b45309',icon:'🏯'},
+            suoi:{coords:[10.25,104.05],title:'수오이짠',color:'#0284c7',icon:'💧'},
+            prison:{coords:[10.22,103.98],title:'코코넛수용소',color:'#475569',icon:'🏛️'}
+        };
+        const spotsOki = {
+            icn:{coords:[37.4602,126.4407],title:'인천',color:'#1e293b',icon:'✈️'},
+            oka:{coords:[26.1958,127.6456],title:'나하',color:'#1e293b',icon:'🛬'},
+            makishi:{coords:[26.2156,127.6889],title:'마키시',color:'#f97316',icon:'🛒'},
+            hotel:{coords:[26.2208,127.6758],title:'르와지르',color:'#004098',icon:'🏨'},
+            churaumi:{coords:[26.6942,127.8778],title:'츄라우미',color:'#0891b2',icon:'🐋'},
+            kariyushi:{coords:[26.4974,127.8410],title:'글래스보트',color:'#0ea5e9',icon:'🚤'},
+            manzamo:{coords:[26.4439,127.7122],title:'만좌모',color:'#16a34a',icon:'🌊'},
+            american:{coords:[26.3165,127.7558],title:'아메리칸',color:'#6366f1',icon:'🏖️'},
+            chinen:{coords:[26.1603,127.8253],title:'치넨',color:'#0284c7',icon:'📸'},
+            okiworld:{coords:[26.1389,127.7497],title:'오키월드',color:'#7c3aed',icon:'🎭'},
+            peace:{coords:[26.0953,127.7256],title:'평화공원',color:'#475569',icon:'🕊️'},
+            masahiro:{coords:[26.1314,127.6658],title:'마사히로',color:'#b45309',icon:'🍶'},
+            shuri:{coords:[26.2170,127.7193],title:'슈리성',color:'#dc2626',icon:'🏯'},
+            kokusai:{coords:[26.2147,127.6890],title:'국제거리',color:'#db2777',icon:'🛍️'},
+            dfs:{coords:[26.2244,127.6947],title:'면세',color:'#64748b',icon:'🎁'}
+        };
+        const routesPqc = {
+            all:{points:['icn','pqc','hotel','cable','sunset','market','safari','grand','hoquoc','suoi','prison','pqc'],maxZoom:8,
+                lines:[{pts:['icn','pqc'],mode:'air',color:'#004098'},{pts:['pqc','hotel'],color:'#0891b2'},{pts:['hotel','cable','sunset','market','hotel'],color:'#0ea5e9'},{pts:['hotel','safari','grand','market','hotel'],color:'#16a34a'},{pts:['hotel','hoquoc','suoi','prison','pqc'],color:'#b45309'},{pts:['pqc','icn'],mode:'air',color:'#64748b'}]},
+            day1:{points:['icn','pqc','hotel'],maxZoom:12,lines:[{pts:['icn','pqc'],mode:'air',color:'#004098'},{pts:['pqc','hotel'],color:'#0891b2'}]},
+            day2:{points:['hotel','cable','sunset','market'],maxZoom:12,lines:[{pts:['hotel','cable','sunset','market','hotel'],color:'#0ea5e9'}]},
+            day3:{points:['hotel','safari','grand','market'],maxZoom:11,lines:[{pts:['hotel','safari','grand','market'],color:'#16a34a'}]},
+            day4:{points:['hotel','hoquoc','suoi','prison','pqc'],maxZoom:11,lines:[{pts:['hotel','hoquoc','suoi','prison','pqc'],color:'#b45309'}]},
+            day5:{points:['icn','pqc'],maxZoom:5,lines:[{pts:['pqc','icn'],mode:'air',color:'#64748b'}]}
+        };
+        const routesOki = {
+            all:{points:['icn','oka','makishi','kokusai','hotel','churaumi','kariyushi','manzamo','american','chinen','okiworld','peace','masahiro','shuri','dfs','oka'],maxZoom:8,
+                lines:[{pts:['icn','oka'],mode:'air',color:'#004098'},{pts:['oka','makishi','kokusai','hotel'],color:'#f97316'},{pts:['hotel','churaumi','kariyushi','manzamo','american','hotel'],color:'#0891b2'},{pts:['hotel','chinen','okiworld','peace','masahiro','hotel'],color:'#7c3aed'},{pts:['hotel','shuri','dfs','oka'],color:'#db2777'},{pts:['oka','icn'],mode:'air',color:'#64748b'}]},
+            day1:{points:['icn','oka','makishi','kokusai','hotel'],maxZoom:13,lines:[{pts:['icn','oka'],mode:'air',color:'#004098'},{pts:['oka','makishi','kokusai','hotel'],color:'#f97316'}]},
+            day2:{points:['hotel','churaumi','kariyushi','manzamo','american'],maxZoom:10,lines:[{pts:['hotel','churaumi','kariyushi','manzamo','american','hotel'],color:'#0891b2'}]},
+            day3:{points:['hotel','chinen','okiworld','peace','masahiro'],maxZoom:11,lines:[{pts:['hotel','chinen','okiworld','peace','masahiro','hotel'],color:'#7c3aed'}]},
+            day4:{points:['hotel','shuri','dfs','oka','icn'],maxZoom:13,lines:[{pts:['hotel','shuri','dfs','oka'],color:'#db2777'},{pts:['oka','icn'],mode:'air',color:'#64748b'}]}
+        };
+        function getSpots(){ return getCurrentOption()==='pqc' ? spotsPqc : spotsOki; }
+        function getRoutes(){ return getCurrentOption()==='pqc' ? routesPqc : routesOki; }
+        function isMobileView(){ return window.matchMedia('(max-width:768px)').matches; }
+
+        function buildMapButtons(){
+            const wrap = document.getElementById('map-btns');
+            if(!wrap) return;
+            const opt = getCurrentOption();
+            const btns = opt==='pqc'
+                ? [{k:'all',l:'전체'},{k:'day1',l:'1일차'},{k:'day2',l:'2일차'},{k:'day3',l:'3일차'},{k:'day4',l:'4일차'},{k:'day5',l:'5일차'}]
+                : [{k:'all',l:'전체'},{k:'day1',l:'1일차'},{k:'day2',l:'2일차'},{k:'day3',l:'3일차'},{k:'day4',l:'4일차'}];
+            wrap.innerHTML = btns.map(b=>`<button type="button" id="btn-map-${b.k}" class="map-btn px-4 py-2 rounded-full text-xs font-bold border bg-white text-slate-600" onclick="filterMap('${b.k}')">${b.l}</button>`).join('');
+        }
+        buildMapButtons();
+
+        function pathMeters(path){ let t=0; for(let i=1;i<path.length;i++) t+=L.latLng(path[i-1]).distanceTo(L.latLng(path[i])); return t; }
+        function formatApproxKm(m){ if(!m)return''; if(m<800)return'약 '+Math.round(m/100)*100+'m'; const km=m/1000; return km<10?'약 '+(Math.round(km*2)/2)+'km':'약 '+Math.round(km)+'km'; }
+        function estimateSeconds(m,mode){ if(!m)return 0; return mode==='air'?m/(800/3.6):m/(25/3.6); }
+        function groupTravelSeconds(s,mode){ if(!s)return 0; if(mode==='air')return s; return Math.max(720,s*1.4+600); }
+        function formatApproxTime(s){ if(!s)return''; const min=Math.max(1,Math.ceil(s/60)); if(min<55)return'약 '+Math.max(15,Math.ceil(min/5)*5)+'분'; const r=Math.ceil(min/10)*10; const h=Math.floor(r/60),m=r%60; return h?(m?`약 ${h}시간 ${m}분`:`약 ${h}시간`):`약 ${m}분`; }
+        function setMapDistance(fk,tk,m,s,mode){
+            const box=document.getElementById('map-distance'), leg=document.getElementById('map-distance-leg'), te=document.getElementById('map-distance-time'), km=document.getElementById('map-distance-km');
+            const spots=getSpots();
+            if(!box||!fk||!spots[fk]){ box?.classList.add('hidden'); return; }
+            box.classList.remove('hidden');
+            leg.textContent=spots[fk].title+' → '+spots[tk].title;
+            te.textContent=formatApproxTime(groupTravelSeconds(s,mode));
+            km.textContent=formatApproxKm(m);
+        }
+        function pinIcon(spot){ return L.divIcon({className:'custom-icon',html:`<div class="map-pin-wrap"><div class="map-pin-dot" style="background:${spot.color}">${spot.icon}</div><span class="map-pin-label">${spot.title}</span></div>`,iconSize:[96,52],iconAnchor:[48,16]}); }
+        const PLANE_REST=45, BUS_REST=90;
+        function bearingDeg(from,to){ const lat1=from[0]*Math.PI/180,lat2=to[0]*Math.PI/180,dLng=(to[1]-from[1])*Math.PI/180; const y=Math.sin(dLng)*Math.cos(lat2), x=Math.cos(lat1)*Math.sin(lat2)-Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLng); return (Math.atan2(y,x)*180/Math.PI+360)%360; }
+        function headingPair(latlngs,i){ const a=latlngs[Math.max(0,Math.min(i,latlngs.length-1))]; let j=Math.min(Math.max(i+1,1),latlngs.length-1); while(j<latlngs.length-1&&L.latLng(a).distanceTo(L.latLng(latlngs[j]))<40)j++; return [a,latlngs[j]]; }
+        function vehicleCssTransform(mode,from,to){ if(!from||!to)return'rotate(0deg)'; if(L.latLng(from).distanceTo(L.latLng(to))<8)return null; const heading=bearingDeg(from,to), rest=mode==='air'?PLANE_REST:BUS_REST; let rot=heading-rest; while(rot>180)rot-=360; while(rot<-180)rot+=360; if(mode!=='air'&&Math.abs(rot)>90){ const flip=rot>0?rot-180:rot+180; return `scaleX(-1) rotate(${flip}deg)`; } return `rotate(${rot}deg)`; }
+        function vehicleIcon(mode,from,to){ const tr=vehicleCssTransform(mode,from,to)||'rotate(0deg)'; return L.divIcon({className:'custom-icon',html:`<div class="map-bus" style="transform:${tr}">${mode==='air'?'✈️':'🚌'}</div>`,iconSize:[28,28],iconAnchor:[14,14]}); }
+        function applyVehicleHeading(marker,from,to,mode){ const tr=vehicleCssTransform(mode,from,to); if(!tr)return; marker.getElement()?.querySelector('.map-bus')?.style&&(marker.getElement().querySelector('.map-bus').style.transform=tr); }
+        function clearMapLayers(){ if(activeBus)activeBus._aborted=true; activeBus=null; mapLayers.forEach(l=>{l._aborted!==undefined&&(l._aborted=true); currentMap.removeLayer(l);}); mapLayers=[]; }
+        async function roadPath(pts){ const key=pts.map(p=>p.join(',')).join('|'); if(osrmCache[key])return osrmCache[key]; try{ const coords=pts.map(p=>`${p[1]},${p[0]}`).join(';'); const res=await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`); const data=await res.json(); if(data.code==='Ok'&&data.routes?.[0]){ const path=data.routes[0].geometry.coordinates.map(([lng,lat])=>[lat,lng]); const packed={path,meters:data.routes[0].distance,seconds:data.routes[0].duration}; osrmCache[key]=packed; return packed; }}catch(e){} const meters=pathMeters(pts); return {path:pts,meters,seconds:estimateSeconds(meters,'drive')}; }
+        function lineDuration(px,rk){ const mob=isMobileView(), all=rk==='all'; const min=mob?(all?1600:2800):(all?900:1400); const max=mob?(all?2800:5600):(all?1800:2800); const pxPerMs=mob?(all?0.22:0.12):0.28; return Math.max(min,Math.min(max,px/pxPerMs)); }
+        function whenPathReady(poly){ return new Promise(resolve=>{ let t=24; const tick=()=>{ const el=poly.getElement(); if(el&&typeof el.getTotalLength==='function')resolve(el); else if(t-->0)requestAnimationFrame(tick); else resolve(null); }; requestAnimationFrame(tick); }); }
+        function animateLine(poly,dur){ return new Promise(async resolve=>{ const path=await whenPathReady(poly); if(!path){resolve(dur);return;} const len=path.getTotalLength(), ms=dur||1400; path.style.transition='none'; path.style.strokeDasharray=len+' '+len; path.style.strokeDashoffset=String(len); path.getBoundingClientRect(); path.style.transition=`stroke-dashoffset ${ms}ms ease-in-out`; path.style.strokeDashoffset='0'; setTimeout(()=>resolve(ms),ms+40); }); }
+        function moveMarkerAlong(marker,latlngs,duration,mode){ return new Promise(resolve=>{ if(!marker||!latlngs||latlngs.length<2){resolve();return;} const dists=[0]; let total=0; for(let i=1;i<latlngs.length;i++){ total+=L.latLng(latlngs[i-1]).distanceTo(L.latLng(latlngs[i])); dists.push(total);} if(!total){resolve();return;} applyVehicleHeading(marker,...headingPair(latlngs,0).concat([mode])); const start=performance.now(); const ease=t=>t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2; function frame(now){ if(marker._aborted){resolve();return;} const t=Math.min(1,(now-start)/duration); const target=total*ease(t); let i=1; while(i<dists.length&&dists[i]<target)i++; const a=latlngs[i-1], b=latlngs[Math.min(i,latlngs.length-1)]; const span=(dists[i]-dists[i-1])||1; const f=(target-dists[i-1])/span; marker.setLatLng([a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]); applyVehicleHeading(marker,...headingPair(latlngs,i-1).concat([mode])); if(t<1)requestAnimationFrame(frame); else resolve(); } requestAnimationFrame(frame); }); }
+        function fitPath(path,maxZoom){ return new Promise(resolve=>{ if(!currentMap||!path||path.length<2){resolve();return;} let done=false; const finish=()=>{if(done)return; done=true; currentMap.off('moveend',finish); resolve();}; currentMap.once('moveend',finish); currentMap.fitBounds(L.latLngBounds(path).pad(0.18),{animate:true,duration:0.7,maxZoom:maxZoom||12,padding:[44,44]}); setTimeout(finish,850); }); }
+        async function drawMap(routeKey){
+            if(!currentMap) return;
+            const seq=++mapDrawSeq; clearMapLayers();
+            const routes=getRoutes(), spots=getSpots();
+            const routeData=routes[routeKey]||routes.all;
+            currentMap.fitBounds(L.latLngBounds(routeData.points.map(k=>spots[k].coords)),{padding:[50,50],maxZoom:routeData.maxZoom||11});
+            const legs=[]; routeData.lines.forEach(ld=>{ for(let i=0;i<ld.pts.length-1;i++) legs.push({from:ld.pts[i],to:ld.pts[i+1],color:ld.color,mode:ld.mode||'drive'}); });
+            const packed=await Promise.all(legs.map(async leg=>{ if(leg.mode==='air'){ const path=[spots[leg.from].coords,spots[leg.to].coords]; const meters=pathMeters(path); return {path,meters,seconds:estimateSeconds(meters,'air')}; } return roadPath([spots[leg.from].coords,spots[leg.to].coords]); }));
+            if(seq!==mapDrawSeq)return;
+            await new Promise(r=>setTimeout(r,280));
+            if(seq!==mapDrawSeq)return;
+            packed.forEach((item,i)=>{ mapLayers.push(L.polyline(item.path,{color:'#94a3b8',weight:3,opacity:0.2,dashArray:legs[i].mode==='air'?'10,10':null}).addTo(currentMap)); });
+            const placed=new Set(); const addPin=(key)=>{ if(!key||placed.has(key))return; placed.add(key); mapLayers.push(L.marker(spots[key].coords,{icon:pinIcon(spots[key]),zIndexOffset:200}).addTo(currentMap)); };
+            const legMaxZoom=(leg)=> leg.mode==='air'?5:(routeKey==='all'?11:Math.max(routeData.maxZoom||12,11));
+            await fitPath(packed[0].path,legMaxZoom(legs[0]));
+            if(seq!==mapDrawSeq)return;
+            addPin(legs[0].from);
+            const bus=L.marker(spots[legs[0].from].coords,{icon:vehicleIcon(legs[0].mode,spots[legs[0].from].coords,spots[legs[0].to].coords),zIndexOffset:900}).addTo(currentMap);
+            bus._aborted=false; activeBus=bus; mapLayers.push(bus);
+            for(let i=0;i<legs.length;i++){
+                if(seq!==mapDrawSeq)return;
+                const leg=legs[i], path=packed[i].path, meters=packed[i].meters||pathMeters(path), seconds=packed[i].seconds||estimateSeconds(meters,leg.mode);
+                bus.setIcon(vehicleIcon(leg.mode,spots[leg.from].coords,spots[leg.to].coords));
+                setMapDistance(leg.from,leg.to,meters,seconds,leg.mode);
+                await fitPath(path,legMaxZoom(leg));
+                const poly=L.polyline(path,{color:leg.color,weight:leg.mode==='air'?3:5,opacity:0.95,dashArray:leg.mode==='air'?'10 8':null,lineJoin:'round',lineCap:'round'}).addTo(currentMap);
+                mapLayers.push(poly);
+                const ready=await whenPathReady(poly);
+                const ms=lineDuration(ready?ready.getTotalLength():400,routeKey);
+                await Promise.all([animateLine(poly,ms),moveMarkerAlong(bus,path,ms,leg.mode)]);
+                addPin(leg.to);
+                await new Promise(r=>setTimeout(r,isMobileView()?280:140));
+            }
+            if(bus&&currentMap.hasLayer(bus))currentMap.removeLayer(bus);
+            mapLayers=mapLayers.filter(l=>l!==bus);
+            const finalKeys=routeData.points.filter(k=>k!=='icn');
+            currentMap.fitBounds(L.latLngBounds((finalKeys.length?finalKeys:routeData.points).map(k=>spots[k].coords)),{padding:[40,40],maxZoom:routeKey==='all'?8:Math.min(routeData.maxZoom||11,11),animate:true});
+        }
+        function mapZoom(d){ if(!currentMap)return; d>0?currentMap.zoomIn():currentMap.zoomOut(); }
+        window.mapZoom=mapZoom;
+        function setMapBtnActive(day){ document.querySelectorAll('.map-btn').forEach(b=>{ b.classList.remove('bg-slate-800','text-white'); b.classList.add('bg-white','text-slate-600'); }); document.getElementById('btn-map-'+day)?.classList.add('bg-slate-800','text-white'); }
+        function initMap(initialKey){ if(mapInited||!window.L)return; mapInited=true; currentMap=L.map('map',{scrollWheelZoom:false,zoomControl:false}); if(typeof L.maplibreGL==='function') L.maplibreGL({style:'https://tiles.openfreemap.org/styles/positron'}).addTo(currentMap); else L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:19}).addTo(currentMap); const start=initialKey||getTodayMapKey()||(isMobileView()?'day1':'all'); setMapBtnActive(start); drawMap(start); }
+        window.filterMap=function(day){ setMapBtnActive(day); if(!currentMap)initMap(day); else drawMap(day); };
+        const io=new IntersectionObserver(es=>{ if(es[0].isIntersecting){ initMap(); io.disconnect(); }},{threshold:0.1});
+        const ms=document.getElementById('map-section'); if(ms) io.observe(ms);
+        function scrollSeatCheckin(e){
+            if(e) e.preventDefault();
+            const id = getCurrentOption()==='pqc' ? 'seat-checkin-pqc' : 'seat-checkin-oki';
+            document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+        }
+        document.querySelector('a[href="#seat-checkin"]')?.addEventListener('click', scrollSeatCheckin);
+        initEventDayUI();
+    </script>
+</body>
+</html>
